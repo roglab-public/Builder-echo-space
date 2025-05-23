@@ -21,7 +21,7 @@ export const slotMachines: SlotMachine[] = [
     avgMultiplierScore: 118,
     betAmount: 1,
     rtp: 96.5,
-    imageUrl: "/placeholder.svg",
+    imageUrl: "http://gofile.me/75LQm/c6QsaqE8b",
     title: {
       kr: "포춘 드래곤",
       en: "Fortune Dragon",
@@ -33,7 +33,7 @@ export const slotMachines: SlotMachine[] = [
       jp: "ラッキーゲームズ",
     },
     description: {
-      kr: "행운의 드래곤 테마 슬롯",
+      kr: "���운의 드래곤 테마 슬롯",
       en: "Lucky dragon themed slot",
       jp: "幸運のドラゴンテーマスロット",
     },

@@ -24,11 +24,11 @@ export const LargeScoreCard = ({
         className,
       )}
     >
-      <div className="text-[#999999] px-4 pt-4 flex flex-col tracking-[-0.4px]">
+      <div className="text-[#999999] text-base px-4 pt-4 flex flex-col tracking-[-0.4px]">
         {title}
       </div>
       <div className="px-4 pb-4">
-        <div className="flex items-center justify-center flex-col min-h-[90px]">
+        <div className="flex items-center justify-center flex-col min-h-[100px]">
           <div className="text-center">
             <div className="font-extrabold py-1 px-1 relative">
               <CountUp value={score} duration={1.5} />

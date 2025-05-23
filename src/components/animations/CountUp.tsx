@@ -24,11 +24,11 @@ export const CountUp = ({ value, duration = 1.5, className }: CountUpProps) => {
   return (
     <div
       className={cn(
-        "inline-block text-[60px] font-bold leading-[60px] perspective-[1000px]",
+        "inline-block text-[75px] font-bold leading-[75px] perspective-[1000px]",
         className,
       )}
     >
-      <div className="flex justify-center font-bold leading-[75px]">
+      <div className="flex justify-center font-bold leading-[90px]">
         {digits.map((digit, index) => (
           <span
             key={index}
