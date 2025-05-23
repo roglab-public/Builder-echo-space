@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { ScreenshotsContent } from "./ScreenshotsContent";
 import { PatternAIContent } from "./PatternAIContent";
 import { OverviewContent } from "./OverviewContent";
+import { VolatilityContent } from "./VolatilityContent";
 
 interface SlotMachineDetailsProps {
   slotMachine: SlotMachine;
@@ -74,6 +75,8 @@ export const SlotMachineDetails = ({
     // For special tabs, return specific components
     if (tabId === "overview") {
       return <OverviewContent slotMachine={slotMachine} />;
+    } else if (tabId === "volatility") {
+      return <VolatilityContent slotMachine={slotMachine} />;
     } else if (tabId === "patternAI") {
       return <PatternAIContent slotMachine={slotMachine} />;
     } else if (tabId === "screenshots") {
@@ -158,7 +161,7 @@ export const SlotMachineDetails = ({
 
       {/* Score cards section */}
       <div className="grid grid-cols-2 gap-3 mt-6 w-full max-w-3xl mx-auto">
-        <ScoreNumberCard title="종합 점��" score={overallScore} />
+        <ScoreNumberCard title="종합 점수" score={overallScore} />
         <ScoreNumberCard title="수익 점수" score={profitScore} />
       </div>
 
