@@ -1,4 +1,13 @@
 import React, { useState, useEffect, useRef } from "react";
+import {
+  LineChart as RechartsLineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
 
 interface LineChartProps {
   title?: string;
@@ -21,55 +30,72 @@ export const LineChart: React.FC<LineChartProps> = ({
   minValue = 1500, // Default minimum value
   maxValue = 2200, // Default maximum value
 }) => {
-  const [data, setData] = useState<number[]>([]);
-  const [isGenerating, setIsGenerating] = useState(!providedData);
+  const [data, setData] = useState<any[]>([]);
   const [isVisible, setIsVisible] = useState(false);
   const chartRef = useRef<HTMLDivElement>(null);
 
-  // Generate data with specific constraints
+  // Generate data for chart
   useEffect(() => {
     if (providedData) {
-      setData(providedData);
+      // If data is provided, format it for recharts
+      const formattedData = providedData.map((value, index) => ({
+        name: index + 1,
+        balance: value,
+      }));
+      setData(formattedData);
       return;
     }
 
-    setIsGenerating(true);
-
     // Generate 200 data points with specific constraints
     const generateData = () => {
-      const points: number[] = [startValue]; // Starting balance
-      const numPoints = 199; // We already have the start point, so we need 199 more
+      const points = [];
+      points.push({ name: 1, balance: startValue });
 
-      // Generate random points
-      for (let i = 1; i < numPoints; i++) {
-        // Calculate expected trend to ensure we reach the end value
-        const trend = (endValue - startValue) / numPoints;
+      // Need to generate 198 points in between
+      const totalPoints = 200;
+      const middlePoints = totalPoints - 2;
 
-        // Maximum random deviation decreases as we approach the end
-        // This helps ensure the curve is smoother near the end
-        const maxDeviation = 50 * (1 - i / numPoints);
+      // Total amount to decrease
+      const totalDecrease = startValue - endValue;
 
-        // Generate random change
-        const randomChange = (Math.random() * 2 - 1) * maxDeviation;
+      // Generate some realistic wave patterns in the data
+      for (let i = 1; i < totalPoints - 1; i++) {
+        // Calculate expected trend to ensure we reach end value
+        const expectedBalance = startValue - (totalDecrease * i) / middlePoints;
 
-        // Expected value at this point plus random change
-        let nextValue = points[i - 1] + trend + randomChange;
+        // Add some randomization with increasing volatility in the middle
+        // This creates a more natural curve
+        const volatility = 100 * Math.sin((i / middlePoints) * Math.PI);
+        const randomDeviation = (Math.random() * 2 - 1) * volatility;
+
+        // Calculate balance with some random movement
+        let balance = expectedBalance + randomDeviation;
+
+        // Add occasional spikes (wins/losses)
+        if (Math.random() > 0.9) {
+          // 10% chance of a significant spike
+          balance +=
+            Math.random() > 0.5
+              ? Math.random() * 200 // win
+              : -Math.random() * 150; // loss
+        }
 
         // Ensure we stay within bounds
-        nextValue = Math.max(minValue, Math.min(maxValue, nextValue));
+        balance = Math.max(minValue, Math.min(maxValue, balance));
 
-        points.push(nextValue);
+        points.push({
+          name: i + 1,
+          balance: balance,
+        });
       }
 
-      // Replace the last point with the exact end value
-      points[numPoints] = endValue;
+      // Add the exact end point
+      points.push({ name: totalPoints, balance: endValue });
 
       return points;
     };
 
-    const randomData = generateData();
-    setData(randomData);
-    setIsGenerating(false);
+    setData(generateData());
   }, [providedData, startValue, endValue, minValue, maxValue]);
 
   // Add intersection observer to show chart when in viewport
@@ -93,28 +119,12 @@ export const LineChart: React.FC<LineChartProps> = ({
     };
   }, []);
 
-  if (!data.length) return null;
+  // Determine if we have a loss
+  const isLoss = endValue < startValue;
+  const lineColor = isLoss ? "#CB2026" : "#FDC42C";
 
-  // Determine the min and max values for scaling
-  const dataMin = Math.min(...data);
-  const dataMax = Math.max(...data);
-  const range = dataMax - dataMin;
-
-  // Calculate if final value is less than initial value (loss)
-  const finalValue = data[data.length - 1];
-  const initialValue = data[0];
-  const isLoss = finalValue < initialValue;
-
-  // Format the points for the polyline
-  const chartWidth = 100; // percentage width
-  const chartHeight = 100; // percentage height
-  const pointsString = data
-    .map((value, index) => {
-      const x = (index / (data.length - 1)) * chartWidth;
-      const y = 100 - ((value - dataMin) / range) * chartHeight;
-      return `${x},${y}`;
-    })
-    .join(" ");
+  // Calculate change percentage
+  const changePercentage = ((endValue / startValue - 1) * 100).toFixed(1);
 
   return (
     <div
@@ -123,60 +133,60 @@ export const LineChart: React.FC<LineChartProps> = ({
     >
       <h4 className="text-[#999999] text-sm mb-2">{title}</h4>
 
+      {/* Chart container */}
       <div
-        className="w-full h-[200px] relative mt-2 transition-opacity duration-700"
+        className="transition-opacity duration-700 w-full h-[200px]"
         style={{ opacity: isVisible ? 1 : 0 }}
       >
-        {/* Y-axis labels */}
-        <div className="absolute left-0 top-0 h-full flex flex-col justify-between text-xs text-[#666666]">
-          <span>{Math.round(dataMax)}</span>
-          <span>{Math.round(dataMin + range / 2)}</span>
-          <span>{Math.round(dataMin)}</span>
-        </div>
-
-        {/* Chart area */}
-        <div className="absolute left-6 right-0 top-0 bottom-0">
-          {/* Horizontal grid lines */}
-          <div className="absolute left-0 top-0 w-full h-[1px] bg-[#333333]"></div>
-          <div className="absolute left-0 top-[50%] w-full h-[1px] bg-[#333333]"></div>
-          <div className="absolute left-0 bottom-0 w-full h-[1px] bg-[#333333]"></div>
-
-          {/* SVG line chart */}
-          <svg className="w-full h-full overflow-visible">
-            {/* Main line */}
-            <polyline
-              points={pointsString}
-              fill="none"
-              stroke={isLoss ? "#CB2026" : "#FDC42C"}
-              strokeWidth="2"
-              strokeLinejoin="round"
-              strokeLinecap="round"
-            />
-
-            {/* Start and end points */}
-            <circle
-              cx="0"
-              cy={100 - ((data[0] - dataMin) / range) * 100}
-              r="3"
-              fill={isLoss ? "#CB2026" : "#FDC42C"}
-            />
-            <circle
-              cx="100%"
-              cy={100 - ((data[data.length - 1] - dataMin) / range) * 100}
-              r="3"
-              fill={isLoss ? "#CB2026" : "#FDC42C"}
-            />
-          </svg>
-        </div>
-      </div>
-
-      {/* X-axis labels */}
-      <div className="flex justify-between text-xs text-[#666666] mt-1">
-        <span>1</span>
-        <span>50</span>
-        <span>100</span>
-        <span>150</span>
-        <span>200</span>
+        {data.length > 0 && (
+          <ResponsiveContainer width="100%" height="100%">
+            <RechartsLineChart
+              data={data}
+              margin={{ top: 5, right: 5, left: 5, bottom: 5 }}
+            >
+              <CartesianGrid
+                strokeDasharray="3 3"
+                stroke="#333"
+                vertical={false}
+              />
+              <XAxis
+                dataKey="name"
+                tick={{ fill: "#666" }}
+                axisLine={{ stroke: "#333" }}
+                tickLine={{ stroke: "#333" }}
+                ticks={[1, 50, 100, 150, 200]}
+              />
+              <YAxis
+                domain={[
+                  Math.floor(minValue * 0.99),
+                  Math.ceil(maxValue * 1.01),
+                ]}
+                tick={{ fill: "#666" }}
+                axisLine={{ stroke: "#333" }}
+                tickLine={{ stroke: "#333" }}
+              />
+              <Tooltip
+                contentStyle={{
+                  backgroundColor: "#262626",
+                  borderColor: "#333",
+                  color: "#fff",
+                }}
+                formatter={(value: number) => [value.toFixed(1), "잔액"]}
+                labelFormatter={(label) => `${label}회차`}
+              />
+              <Line
+                type="monotone"
+                dataKey="balance"
+                stroke={lineColor}
+                strokeWidth={2}
+                dot={false}
+                activeDot={{ r: 6, fill: lineColor }}
+                isAnimationActive={isVisible}
+                animationDuration={1500}
+              />
+            </RechartsLineChart>
+          </ResponsiveContainer>
+        )}
       </div>
 
       {/* Summary */}
@@ -186,7 +196,7 @@ export const LineChart: React.FC<LineChartProps> = ({
           <span
             className={`font-bold ${isLoss ? "text-[#CB2026]" : "text-[#FDC42C]"}`}
           >
-            {finalValue.toFixed(1)}
+            {endValue.toFixed(1)}
           </span>
         </div>
         <div className="flex justify-between items-center mt-1">
@@ -194,7 +204,7 @@ export const LineChart: React.FC<LineChartProps> = ({
           <span
             className={`font-bold ${isLoss ? "text-[#CB2026]" : "text-[#FDC42C]"}`}
           >
-            {((finalValue / initialValue - 1) * 100).toFixed(1)}%
+            {changePercentage}%
           </span>
         </div>
       </div>
