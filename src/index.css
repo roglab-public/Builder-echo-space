@@ -1,12 +1,9 @@
-@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap");
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
-    /* Light mode colors - will be overridden by dark mode */
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
 
@@ -37,13 +34,28 @@
 
     --radius: 0.5rem;
 
+    --sidebar-background: 0 0% 98%;
+
+    --sidebar-foreground: 240 5.3% 26.1%;
+
+    --sidebar-primary: 240 5.9% 10%;
+
+    --sidebar-primary-foreground: 0 0% 98%;
+
+    --sidebar-accent: 240 4.8% 95.9%;
+
+    --sidebar-accent-foreground: 240 5.9% 10%;
+
+    --sidebar-border: 220 13% 91%;
+
+    --sidebar-ring: 217.2 91.2% 59.8%;
+
     /* Brand colors */
     --brand-yellow: 45 98% 58%;
     --brand-red: 357 72% 47%;
   }
 
   .dark {
-    /* Dark mode colors based on user specification */
     --background: 0 0% 12%; /* 1E1E1E */
     --foreground: 0 0% 100%;
 
@@ -141,4 +153,30 @@
   font-weight: 700;
   font-style: normal;
   font-display: swap;
+}
+
+/* Custom animations */
+@keyframes flipIn {
+  0% {
+    transform: rotateX(90deg);
+    opacity: 0;
+  }
+  100% {
+    transform: rotateX(0deg);
+    opacity: 1;
+  }
+}
+
+.animate-flipIn {
+  animation-name: flipIn;
+  animation-fill-mode: both;
+  animation-timing-function: ease-out;
+}
+
+.transform-style-3d {
+  transform-style: preserve-3d;
+}
+
+.perspective-1000 {
+  perspective: 1000px;
 }

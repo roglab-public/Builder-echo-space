@@ -1,5 +1,6 @@
 import { SlotMachine, ScoreCategory } from "@/types";
 import { ScoreCard } from "./ScoreCard";
+import { LargeScoreCard } from "./LargeScoreCard";
 import { getScoreCategories } from "@/data/slot-machines";
 import { SlotTabs } from "./SlotTabs";
 import { TabContent } from "./TabContent";
@@ -72,13 +73,15 @@ export const SlotMachineDetails = ({
         <div className="flex items-center gap-2">
           <Badge
             variant={getBadgeVariant(overallScore)}
-            className="flex items-center gap-1 text-xs font-semibold py-0.5 px-2.5"
+            size="xl"
+            className="flex items-center gap-1"
           >
             {overallScore}
           </Badge>
           <Badge
             variant={getBadgeVariant(profitScore)}
-            className="flex items-center gap-1 text-xs font-semibold py-0.5 px-2.5"
+            size="xl"
+            className="flex items-center gap-1"
           >
             {profitScore}
           </Badge>
@@ -101,26 +104,10 @@ export const SlotMachineDetails = ({
         </p>
       </div>
 
-      {/* Edit button moved below */}
-      <div className="w-full max-w-3xl mx-auto flex justify-end">
-        <a
-          href="#"
-          className="inline-flex items-center justify-center rounded-md bg-[#1f1f1f] border border-[#333333] px-3 h-9 text-sm font-medium leading-5 whitespace-nowrap transition-colors"
-        >
-          정보 수정
-        </a>
-      </div>
-
-      {/* Overall Evaluation section (always shown) */}
-      <div className="border border-[#707070] p-4 rounded-lg bg-card w-full max-w-3xl mx-auto">
-        <h3 className="text-xl font-bold mb-4 text-brand-yellow" lang="ko">
-          {categories[0].title}
-        </h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {categories[0].metrics.map((metric, index) => (
-            <ScoreCard key={index} metric={metric} />
-          ))}
-        </div>
+      {/* Overall Evaluation section with large score cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-6 w-full max-w-3xl mx-auto">
+        <LargeScoreCard title="종합 점수" score={overallScore} />
+        <LargeScoreCard title="수익 점수" score={profitScore} />
       </div>
 
       {/* Tabs section - positioned between Overall Evaluation and other categories */}
@@ -178,6 +165,16 @@ export const SlotMachineDetails = ({
           </div>
         </div>
       )}
+
+      {/* Edit button moved to the very bottom */}
+      <div className="w-full max-w-3xl mx-auto flex justify-end">
+        <a
+          href="#"
+          className="inline-flex items-center justify-center rounded-md bg-[#1f1f1f] border border-[#333333] px-3 h-9 text-sm font-medium leading-5 whitespace-nowrap transition-colors"
+        >
+          정보 수정
+        </a>
+      </div>
     </div>
   );
 };

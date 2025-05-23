@@ -2,6 +2,7 @@ import { Progress } from "@/components/ui/progress";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { ScoreMetric } from "@/types";
+import { CountUp } from "@/components/animations/CountUp";
 
 interface ScoreCardProps {
   metric: ScoreMetric;
@@ -13,9 +14,7 @@ export const ScoreCard = ({ metric, className }: ScoreCardProps) => {
 
   // Determine color based on score using brand colors
   const getScoreColor = (score: number) => {
-    if (score >= 80) return "bg-brand-yellow";
-    if (score >= 60) return "bg-amber-500";
-    if (score >= 40) return "bg-orange-500";
+    if (score >= 50) return "bg-brand-yellow";
     return "bg-brand-red";
   };
 
