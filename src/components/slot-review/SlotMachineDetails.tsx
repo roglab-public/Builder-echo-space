@@ -15,15 +15,17 @@ export const SlotMachineDetails = ({
   const { title, dev, description, rtp, betAmount, updatedDate } = slotMachine;
   const categories = getScoreCategories(slotMachine);
 
-  // Tab state
-  const [activeTab, setActiveTab] = useState<string>("topPerforming");
+  // Get category IDs dynamically from categories
+  const categoryIds = categories.map((cat, index) => ({
+    id: `category-${index}`,
+    label: cat.title,
+  }));
 
-  // Tabs configuration
-  const tabOptions = [
-    { id: "topPerforming", label: "상위 성능 슬롯" },
-    { id: "topRanked", label: "상위 평점 슬롯" },
-    { id: "recommended", label: "추천 슬롯" },
-  ];
+  // Skip the first category (Overall Evaluation) for tabs
+  const tabOptions = categoryIds.slice(1);
+
+  // Set default selected tab to the first category after Overall
+  const [activeTab, setActiveTab] = useState<string>(tabOptions[0]?.id || "");
 
   // Format date for display
   const formatDate = (dateString: string) => {
@@ -82,66 +84,49 @@ export const SlotMachineDetails = ({
         </div>
       </div>
 
-      {/* Score categories */}
-      <div className="space-y-6 w-full max-w-3xl mx-auto">
-        {categories.map((category: ScoreCategory, index: number) => {
-          // Only render the category content, without tabs inside
-          return (
-            <div
-              key={index}
-              className="border border-[#707070] p-4 rounded-lg bg-card"
-            >
-              <h3
-                className="text-xl font-bold mb-4 text-brand-yellow"
-                lang="ko"
-              >
-                {category.title}
-              </h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {category.metrics.map((metric, metricIndex) => (
-                  <ScoreCard key={metricIndex} metric={metric} />
-                ))}
-              </div>
-            </div>
-          );
-        })}
+      {/* Overall Evaluation section (always shown) */}
+      <div className="border border-[#707070] p-4 rounded-lg bg-card w-full max-w-3xl mx-auto">
+        <h3 className="text-xl font-bold mb-4 text-brand-yellow" lang="ko">
+          {categories[0].title}
+        </h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {categories[0].metrics.map((metric, index) => (
+            <ScoreCard key={index} metric={metric} />
+          ))}
+        </div>
       </div>
 
-      {/* Tabs section - moved outside of the category mapping */}
-      <div className="mt-6 w-full max-w-3xl mx-auto">
+      {/* Tabs section - positioned between Overall Evaluation and other categories */}
+      <div className="w-full max-w-3xl mx-auto">
         <SlotTabs
           options={tabOptions}
-          defaultTab="topPerforming"
+          defaultTab={tabOptions[0]?.id}
           onChange={setActiveTab}
           className="mb-4"
         />
 
-        <TabContent id="topPerforming" activeTab={activeTab}>
-          <div className="p-4 border border-[#707070] rounded-lg bg-[#1f1f1f]">
-            <p lang="ko" className="text-[#999999]">
-              상위 성능 슬롯에 대한 정보가 여기에 표시됩니다. 높은 RTP와 우수한
-              히트율을 가진 슬롯 머신입니다.
-            </p>
-          </div>
-        </TabContent>
-
-        <TabContent id="topRanked" activeTab={activeTab}>
-          <div className="p-4 border border-[#707070] rounded-lg bg-[#1f1f1f]">
-            <p lang="ko" className="text-[#999999]">
-              상위 평점 슬롯에 대한 정보가 여기에 표시됩니다. 사용자들에게 높은
-              평가를 받은 슬롯 머신입니다.
-            </p>
-          </div>
-        </TabContent>
-
-        <TabContent id="recommended" activeTab={activeTab}>
-          <div className="p-4 border border-[#707070] rounded-lg bg-[#1f1f1f]">
-            <p lang="ko" className="text-[#999999]">
-              추천 슬롯에 대한 정보가 여기에 표시됩니다. 전문가가 추천하는 슬롯
-              머신입니다.
-            </p>
-          </div>
-        </TabContent>
+        {/* Show tab content based on selected tab */}
+        {tabOptions.map((tabOption, index) => (
+          <TabContent
+            key={tabOption.id}
+            id={tabOption.id}
+            activeTab={activeTab}
+          >
+            <div className="border border-[#707070] p-4 rounded-lg bg-card">
+              <h3
+                className="text-xl font-bold mb-4 text-brand-yellow"
+                lang="ko"
+              >
+                {categories[index + 1].title}
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {categories[index + 1].metrics.map((metric, metricIndex) => (
+                  <ScoreCard key={metricIndex} metric={metric} />
+                ))}
+              </div>
+            </div>
+          </TabContent>
+        ))}
       </div>
 
       {/* Screenshots section */}
