@@ -30,7 +30,7 @@ export const NavigationButtons: React.FC<NavigationButtonsProps> = ({
       {hasPrevious ? (
         <button
           onClick={() => onNavigate(previousTab!.id)}
-          className="flex items-center gap-2 px-4 py-2 bg-[rgba(74,74,74,1)] text-white font-medium rounded-lg transition-colors hover:bg-opacity-90"
+          className="flex items-center gap-2 px-4 py-2 bg-[#262626] text-white font-medium rounded-lg transition-colors hover:bg-opacity-90 border border-[#333333]"
         >
           <span>◀</span>
           <span>{previousTab!.label}</span>
@@ -42,7 +42,7 @@ export const NavigationButtons: React.FC<NavigationButtonsProps> = ({
       {hasNext && (
         <button
           onClick={() => onNavigate(nextTab!.id)}
-          className="flex items-center gap-2 px-4 py-2 bg-[rgba(74,74,74,1)] text-white font-medium rounded-lg transition-colors hover:bg-opacity-90"
+          className="flex items-center gap-2 px-4 py-2 bg-[#262626] text-white font-medium rounded-lg transition-colors hover:bg-opacity-90 border border-[#333333]"
         >
           <span>{nextTab!.label}</span>
           <span>▶</span>
