@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef, useState, useEffect } from "react";
 
 interface MetricData {
   name: string;
@@ -10,13 +10,39 @@ interface RadarChartProps {
   title?: string;
   metrics: MetricData[];
   className?: string;
+  description?: string;
 }
 
 export const RadarChart: React.FC<RadarChartProps> = ({
   title = "슬롯 머신 성능 지표",
   metrics,
   className,
+  description = "이 차트는 슬롯 머신의 5가지 주요 성능 지표를 보여줍니다: 변동성, 히트율, 흑자 히트율, 최고 배수, 평균 배수. 각 지표가 높을수록 전체적인 성능이 우수합니다.",
 }) => {
+  const [isVisible, setIsVisible] = useState(false);
+  const chartRef = useRef<HTMLDivElement>(null);
+
+  // Add intersection observer to show chart when in viewport
+  useEffect(() => {
+    if (!chartRef.current) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          setIsVisible(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.4 }, // 40% of element must be visible
+    );
+
+    observer.observe(chartRef.current);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, []);
+
   const center = 50;
   const radius = 40;
   const sides = metrics.length;
@@ -54,11 +80,15 @@ export const RadarChart: React.FC<RadarChartProps> = ({
 
   return (
     <div
+      ref={chartRef}
       className={`border border-[#333333] rounded-lg p-4 bg-[#1f1f1f] ${className}`}
     >
       <h4 className="text-[#999999] text-sm mb-4">{title}</h4>
 
-      <div className="relative w-full">
+      <div
+        className="relative w-full transition-opacity duration-700"
+        style={{ opacity: isVisible ? 1 : 0 }}
+      >
         <svg viewBox="0 0 100 100" className="w-full h-[250px]">
           {/* Background grid - multiple levels */}
           {[0.2, 0.4, 0.6, 0.8, 1].map((level, idx) => (
@@ -129,6 +159,11 @@ export const RadarChart: React.FC<RadarChartProps> = ({
             </div>
           );
         })}
+      </div>
+
+      {/* Description box */}
+      <div className="mt-4 mx-[10%] p-3 bg-[#262626] rounded border border-[#333333] text-sm text-[#999999]">
+        {description}
       </div>
     </div>
   );

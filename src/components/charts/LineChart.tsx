@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 
 interface LineChartProps {
   title?: string;
   data?: number[];
   betAmount?: number;
   className?: string;
+  description?: string;
 }
 
 export const LineChart: React.FC<LineChartProps> = ({
@@ -12,9 +13,12 @@ export const LineChart: React.FC<LineChartProps> = ({
   data: providedData,
   betAmount = 1,
   className,
+  description = "이 차트는 200회의 게임 동안 잔액이 어떻게 변화하는지 보여줍니다. 최종 금액이 턴오버보다 높으면 수익이 발생했음을 의미합니다.",
 }) => {
   const [data, setData] = useState<number[]>([]);
   const [isGenerating, setIsGenerating] = useState(!providedData);
+  const [isVisible, setIsVisible] = useState(false);
+  const chartRef = useRef<HTMLDivElement>(null);
 
   // Generate random data if not provided
   useEffect(() => {
@@ -52,6 +56,27 @@ export const LineChart: React.FC<LineChartProps> = ({
     setIsGenerating(false);
   }, [providedData, betAmount]);
 
+  // Add intersection observer to show chart when in viewport
+  useEffect(() => {
+    if (!chartRef.current) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          setIsVisible(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.4 }, // 40% of element must be visible
+    );
+
+    observer.observe(chartRef.current);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, []);
+
   if (!data.length) return null;
 
   // Determine the min and max values for scaling
@@ -77,11 +102,15 @@ export const LineChart: React.FC<LineChartProps> = ({
 
   return (
     <div
+      ref={chartRef}
       className={`border border-[#333333] rounded-lg p-4 bg-[#1f1f1f] ${className}`}
     >
       <h4 className="text-[#999999] text-sm mb-2">{title}</h4>
 
-      <div className="w-full h-[200px] relative mt-2">
+      <div
+        className="w-full h-[200px] relative mt-2 transition-opacity duration-700"
+        style={{ opacity: isVisible ? 1 : 0 }}
+      >
         {/* Y-axis labels */}
         <div className="absolute left-0 top-0 h-full flex flex-col justify-between text-xs text-[#666666]">
           <span>{Math.round(maxValue)}</span>
@@ -152,6 +181,11 @@ export const LineChart: React.FC<LineChartProps> = ({
             {((finalValue / 100 - 1) * 100).toFixed(1)}%
           </span>
         </div>
+      </div>
+
+      {/* Description box */}
+      <div className="mt-4 mx-[10%] p-3 bg-[#262626] rounded border border-[#333333] text-sm text-[#999999]">
+        {description}
       </div>
     </div>
   );

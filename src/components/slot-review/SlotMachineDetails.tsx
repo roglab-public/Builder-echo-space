@@ -1,6 +1,5 @@
 import { SlotMachine, ScoreCategory } from "@/types";
 import { ScoreCard } from "./ScoreCard";
-import { LargeScoreCard } from "./LargeScoreCard";
 import { getScoreCategories } from "@/data/slot-machines";
 import { SlotTabs } from "./SlotTabs";
 import { TabContent } from "./TabContent";
@@ -8,8 +7,7 @@ import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { ScreenshotsContent } from "./ScreenshotsContent";
 import { PatternAIContent } from "./PatternAIContent";
-import { LineChart } from "@/components/charts/LineChart";
-import { RadarChart } from "@/components/charts/RadarChart";
+import { OverviewContent } from "./OverviewContent";
 
 interface SlotMachineDetailsProps {
   slotMachine: SlotMachine;
@@ -18,34 +16,16 @@ interface SlotMachineDetailsProps {
 export const SlotMachineDetails = ({
   slotMachine,
 }: SlotMachineDetailsProps) => {
-  const {
-    title,
-    dev,
-    description,
-    updatedDate,
-    overallScore,
-    profitScore,
-    volatility,
-    volatilityScore,
-    hitFrequency,
-    hitFrequencyScore,
-    profithitRatio,
-    profithitRatioScore,
-    maxMultiplier,
-    maxMultiplierScore,
-    avgMultiplier,
-    avgMultiplierScore,
-    betAmount,
-  } = slotMachine;
-
+  const { title, dev, description, updatedDate, overallScore, profitScore } =
+    slotMachine;
   const categories = getScoreCategories(slotMachine);
 
   // Define all tab options
   const tabOptions = [
-    { id: "overview", label: "전체" },
+    { id: "overview", label: "오버뷰" },
     { id: "volatility", label: "변동성" },
     { id: "hitRate", label: "히트율" },
-    { id: "profitHitRate", label: "��자 히트율" },
+    { id: "profitHitRate", label: "흑자 히트율" },
     { id: "maxMultiplier", label: "최고 배수" },
     { id: "avgMultiplier", label: "평균 배수" },
     { id: "patternAI", label: "PatternAI™" },
@@ -65,15 +45,6 @@ export const SlotMachineDetails = ({
     return score >= 50 ? "yellow" : "red";
   };
 
-  // Metrics for radar chart
-  const radarMetrics = [
-    { name: "변동성", value: volatilityScore, maxValue: 100 },
-    { name: "히트율", value: hitFrequencyScore, maxValue: 100 },
-    { name: "흑자 히트율", value: profithitRatioScore, maxValue: 100 },
-    { name: "최고 배수", value: maxMultiplierScore / 10, maxValue: 100 }, // Scale down
-    { name: "평균 배수", value: avgMultiplierScore, maxValue: 120 },
-  ];
-
   // Get the content for the category tabs
   const getCategoryContent = (tabId: string) => {
     // Map tab IDs to category indices
@@ -85,42 +56,13 @@ export const SlotMachineDetails = ({
       avgMultiplier: 5,
     };
 
-    // For PatternAI and Screenshots, return specific components
-    if (tabId === "patternAI") {
+    // For special tabs, return specific components
+    if (tabId === "overview") {
+      return <OverviewContent slotMachine={slotMachine} />;
+    } else if (tabId === "patternAI") {
       return <PatternAIContent slotMachine={slotMachine} />;
     } else if (tabId === "screenshots") {
       return <ScreenshotsContent slotMachine={slotMachine} />;
-    } else if (tabId === "overview") {
-      // For overview, show all categories
-      return (
-        <div className="space-y-6">
-          {/* Charts section */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <LineChart betAmount={betAmount} />
-            <RadarChart metrics={radarMetrics} />
-          </div>
-
-          {/* Categories */}
-          {categories.map((category, index) => (
-            <div
-              key={index}
-              className="border border-[#707070] p-4 rounded-lg bg-card"
-            >
-              <h3
-                className="text-xl font-bold mb-4 text-brand-yellow"
-                lang="ko"
-              >
-                {category.title}
-              </h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {category.metrics.map((metric, metricIndex) => (
-                  <ScoreCard key={metricIndex} metric={metric} />
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
-      );
     } else {
       // For other tabs, show the corresponding category
       const categoryIndex = tabToCategory[tabId];
@@ -193,12 +135,6 @@ export const SlotMachineDetails = ({
         <p className="text-muted-foreground" lang="ko">
           {description.kr}
         </p>
-      </div>
-
-      {/* Overall Evaluation section with large score cards - keep in single row */}
-      <div className="grid grid-cols-2 gap-3 mt-6 w-full max-w-3xl mx-auto">
-        <LargeScoreCard title="종합 점수" score={overallScore} />
-        <LargeScoreCard title="수익 점수" score={profitScore} />
       </div>
 
       {/* Tabs section with horizontal scroll */}
