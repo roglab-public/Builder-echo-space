@@ -20,92 +20,77 @@ export const SlotMachineDetails = ({
 
   return (
     <div className="space-y-8">
-      <div className="flex flex-col md:flex-row gap-8">
-        {/* Slot machine image and basic info */}
-        <div className="md:w-1/3">
-          <div className="aspect-video overflow-hidden rounded-lg border border-[#707070]">
-            <img
-              src={slotMachine.imageUrl}
-              alt={title.kr}
-              className="object-cover w-full h-full"
-            />
-          </div>
-          <div className="mt-4 space-y-3 border border-[#707070] p-4 rounded-lg bg-card">
-            <div>
-              <h3
-                className="text-sm font-medium text-muted-foreground"
-                lang="ko"
-              >
-                제공 업체
-              </h3>
-              <p lang="ko">{dev.kr}</p>
-            </div>
-            <div>
-              <h3
-                className="text-sm font-medium text-muted-foreground"
-                lang="ko"
-              >
-                RTP (Return to Player)
-              </h3>
-              <p>{rtp}%</p>
-            </div>
-            <div>
-              <h3
-                className="text-sm font-medium text-muted-foreground"
-                lang="ko"
-              >
-                기본 베팅 금액
-              </h3>
-              <p>{betAmount}</p>
-            </div>
-            <div>
-              <h3
-                className="text-sm font-medium text-muted-foreground"
-                lang="ko"
-              >
-                업데이트 날짜
-              </h3>
-              <p>{formatDate(updatedDate.substring(0, 10))}</p>
-            </div>
-          </div>
-        </div>
+      {/* Header section with title and description */}
+      <div>
+        <h2 className="text-2xl font-bold mb-6 text-brand-yellow" lang="ko">
+          {title.kr} 리뷰
+        </h2>
+        <p className="text-muted-foreground mb-6" lang="ko">
+          {description.kr}
+        </p>
+      </div>
 
-        {/* Scores and metrics */}
-        <div className="md:w-2/3">
-          <h2 className="text-2xl font-bold mb-6 text-brand-yellow" lang="ko">
-            {title.kr} 리뷰
-          </h2>
-          <p className="text-muted-foreground mb-6" lang="ko">
-            {description.kr}
-          </p>
+      {/* Image section */}
+      <div className="aspect-video overflow-hidden rounded-lg border border-[#707070] w-full max-w-3xl mx-auto">
+        <img
+          src={slotMachine.imageUrl}
+          alt={title.kr}
+          className="object-cover w-full h-full"
+        />
+      </div>
 
-          {/* Score categories */}
-          <div className="space-y-8">
-            {categories.map((category: ScoreCategory, index: number) => (
-              <div
-                key={index}
-                className="border border-[#707070] p-4 rounded-lg bg-card"
-              >
-                <h3
-                  className="text-xl font-bold mb-4 text-brand-yellow"
-                  lang="ko"
-                >
-                  {category.title}
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {category.metrics.map((metric, metricIndex) => (
-                    <ScoreCard key={metricIndex} metric={metric} />
-                  ))}
-                </div>
-              </div>
-            ))}
+      {/* Basic info section */}
+      <div className="border border-[#707070] p-4 rounded-lg bg-card w-full max-w-3xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <h3 className="text-sm font-medium text-muted-foreground" lang="ko">
+              제공 업체
+            </h3>
+            <p lang="ko">{dev.kr}</p>
+          </div>
+          <div>
+            <h3 className="text-sm font-medium text-muted-foreground" lang="ko">
+              RTP (Return to Player)
+            </h3>
+            <p>{rtp}%</p>
+          </div>
+          <div>
+            <h3 className="text-sm font-medium text-muted-foreground" lang="ko">
+              기본 베팅 금액
+            </h3>
+            <p>{betAmount}</p>
+          </div>
+          <div>
+            <h3 className="text-sm font-medium text-muted-foreground" lang="ko">
+              업데이트 날짜
+            </h3>
+            <p>{formatDate(updatedDate.substring(0, 10))}</p>
           </div>
         </div>
       </div>
 
+      {/* Score categories */}
+      <div className="space-y-6 w-full max-w-3xl mx-auto">
+        {categories.map((category: ScoreCategory, index: number) => (
+          <div
+            key={index}
+            className="border border-[#707070] p-4 rounded-lg bg-card"
+          >
+            <h3 className="text-xl font-bold mb-4 text-brand-yellow" lang="ko">
+              {category.title}
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {category.metrics.map((metric, metricIndex) => (
+                <ScoreCard key={metricIndex} metric={metric} />
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+
       {/* Screenshots section */}
       {slotMachine.screenshots && slotMachine.screenshots.length > 0 && (
-        <div className="mt-8 border border-[#707070] p-4 rounded-lg bg-card">
+        <div className="border border-[#707070] p-4 rounded-lg bg-card w-full max-w-3xl mx-auto">
           <h3 className="text-xl font-bold mb-4 text-brand-yellow" lang="ko">
             스크린샷
           </h3>
