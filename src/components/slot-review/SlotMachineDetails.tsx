@@ -1,5 +1,6 @@
 import { SlotMachine, ScoreCategory } from "@/types";
 import { ScoreCard } from "./ScoreCard";
+import { ScoreNumberCard } from "./ScoreNumberCard";
 import { getScoreCategories } from "@/data/slot-machines";
 import { SlotTabs } from "./SlotTabs";
 import { TabContent } from "./TabContent";
@@ -135,6 +136,12 @@ export const SlotMachineDetails = ({
         <p className="text-muted-foreground" lang="ko">
           {description.kr}
         </p>
+      </div>
+
+      {/* Score cards section */}
+      <div className="grid grid-cols-2 gap-3 mt-6 w-full max-w-3xl mx-auto">
+        <ScoreNumberCard title="종합 점수" score={overallScore} />
+        <ScoreNumberCard title="수익 점수" score={profitScore} />
       </div>
 
       {/* Tabs section with horizontal scroll */}

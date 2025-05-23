@@ -2,7 +2,6 @@ import React from "react";
 import { SlotMachine } from "@/types";
 import { LineChart } from "@/components/charts/LineChart";
 import { RadarChart } from "@/components/charts/RadarChart";
-import { ScoreNumberCard } from "./ScoreNumberCard";
 
 interface OverviewContentProps {
   slotMachine: SlotMachine;
@@ -10,14 +9,11 @@ interface OverviewContentProps {
 
 export const OverviewContent = ({ slotMachine }: OverviewContentProps) => {
   const {
-    overallScore,
-    profitScore,
     volatilityScore,
     hitFrequencyScore,
     profithitRatioScore,
     maxMultiplierScore,
     avgMultiplierScore,
-    betAmount,
   } = slotMachine;
 
   // Metrics for radar chart
@@ -35,16 +31,13 @@ export const OverviewContent = ({ slotMachine }: OverviewContentProps) => {
         전체 평가
       </h3>
 
-      {/* Score cards grid */}
-      <div className="grid grid-cols-2 gap-3 mb-6">
-        <ScoreNumberCard title="종합 점수" score={overallScore} />
-        <ScoreNumberCard title="수익 점수" score={profitScore} />
-      </div>
-
       {/* Charts with responsive grid - stacks on mobile */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <LineChart
-          betAmount={betAmount}
+          startValue={2000}
+          endValue={1650}
+          minValue={1500}
+          maxValue={2200}
           description="이 차트는 200회의 게임 동안 잔액이 어떻게 변화하는지 보여줍니다. 최종 금액이 턴오버보다 높으면 수익이 발생했음을 의미합니다."
         />
         <RadarChart

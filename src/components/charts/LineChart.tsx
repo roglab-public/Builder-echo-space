@@ -3,24 +3,30 @@ import React, { useState, useEffect, useRef } from "react";
 interface LineChartProps {
   title?: string;
   data?: number[];
-  betAmount?: number;
   className?: string;
   description?: string;
+  startValue?: number;
+  endValue?: number;
+  minValue?: number;
+  maxValue?: number;
 }
 
 export const LineChart: React.FC<LineChartProps> = ({
   title = "잔액 변화 (1~200회)",
   data: providedData,
-  betAmount = 1,
   className,
   description = "이 차트는 200회의 게임 동안 잔액이 어떻게 변화하는지 보여줍니다. 최종 금액이 턴오버보다 높으면 수익이 발생했음을 의미합니다.",
+  startValue = 2000, // Default start value
+  endValue = 1650, // Default end value
+  minValue = 1500, // Default minimum value
+  maxValue = 2200, // Default maximum value
 }) => {
   const [data, setData] = useState<number[]>([]);
   const [isGenerating, setIsGenerating] = useState(!providedData);
   const [isVisible, setIsVisible] = useState(false);
   const chartRef = useRef<HTMLDivElement>(null);
 
-  // Generate random data if not provided
+  // Generate data with specific constraints
   useEffect(() => {
     if (providedData) {
       setData(providedData);
@@ -29,24 +35,34 @@ export const LineChart: React.FC<LineChartProps> = ({
 
     setIsGenerating(true);
 
-    // Generate 200 data points simulating balance changes
+    // Generate 200 data points with specific constraints
     const generateData = () => {
-      const points: number[] = [100]; // Starting balance
+      const points: number[] = [startValue]; // Starting balance
+      const numPoints = 199; // We already have the start point, so we need 199 more
 
-      for (let i = 1; i < 200; i++) {
-        // Generate a random change with higher chance of small losses
-        const change =
-          Math.random() > 0.3
-            ? -betAmount // Loss (70% chance)
-            : Math.random() > 0.5
-              ? betAmount * (1 + Math.random() * 3) // Small win (15% chance)
-              : betAmount *
-                (Math.random() > 0.7
-                  ? 10 + Math.random() * 20
-                  : 3 + Math.random() * 5); // Big win (15% chance)
+      // Generate random points
+      for (let i = 1; i < numPoints; i++) {
+        // Calculate expected trend to ensure we reach the end value
+        const trend = (endValue - startValue) / numPoints;
 
-        points.push(points[i - 1] + change);
+        // Maximum random deviation decreases as we approach the end
+        // This helps ensure the curve is smoother near the end
+        const maxDeviation = 50 * (1 - i / numPoints);
+
+        // Generate random change
+        const randomChange = (Math.random() * 2 - 1) * maxDeviation;
+
+        // Expected value at this point plus random change
+        let nextValue = points[i - 1] + trend + randomChange;
+
+        // Ensure we stay within bounds
+        nextValue = Math.max(minValue, Math.min(maxValue, nextValue));
+
+        points.push(nextValue);
       }
+
+      // Replace the last point with the exact end value
+      points[numPoints] = endValue;
 
       return points;
     };
@@ -54,7 +70,7 @@ export const LineChart: React.FC<LineChartProps> = ({
     const randomData = generateData();
     setData(randomData);
     setIsGenerating(false);
-  }, [providedData, betAmount]);
+  }, [providedData, startValue, endValue, minValue, maxValue]);
 
   // Add intersection observer to show chart when in viewport
   useEffect(() => {
@@ -80,14 +96,14 @@ export const LineChart: React.FC<LineChartProps> = ({
   if (!data.length) return null;
 
   // Determine the min and max values for scaling
-  const minValue = Math.min(...data);
-  const maxValue = Math.max(...data);
-  const range = maxValue - minValue;
+  const dataMin = Math.min(...data);
+  const dataMax = Math.max(...data);
+  const range = dataMax - dataMin;
 
-  // Calculate if final value is greater than turnover
+  // Calculate if final value is less than initial value (loss)
   const finalValue = data[data.length - 1];
-  const turnover = betAmount * 200;
-  const isProfit = finalValue > turnover;
+  const initialValue = data[0];
+  const isLoss = finalValue < initialValue;
 
   // Format the points for the polyline
   const chartWidth = 100; // percentage width
@@ -95,7 +111,7 @@ export const LineChart: React.FC<LineChartProps> = ({
   const pointsString = data
     .map((value, index) => {
       const x = (index / (data.length - 1)) * chartWidth;
-      const y = 100 - ((value - minValue) / range) * chartHeight;
+      const y = 100 - ((value - dataMin) / range) * chartHeight;
       return `${x},${y}`;
     })
     .join(" ");
@@ -113,9 +129,9 @@ export const LineChart: React.FC<LineChartProps> = ({
       >
         {/* Y-axis labels */}
         <div className="absolute left-0 top-0 h-full flex flex-col justify-between text-xs text-[#666666]">
-          <span>{Math.round(maxValue)}</span>
-          <span>{Math.round(minValue + range / 2)}</span>
-          <span>{Math.round(minValue)}</span>
+          <span>{Math.round(dataMax)}</span>
+          <span>{Math.round(dataMin + range / 2)}</span>
+          <span>{Math.round(dataMin)}</span>
         </div>
 
         {/* Chart area */}
@@ -131,7 +147,7 @@ export const LineChart: React.FC<LineChartProps> = ({
             <polyline
               points={pointsString}
               fill="none"
-              stroke={isProfit ? "#FDC42C" : "#CB2026"}
+              stroke={isLoss ? "#CB2026" : "#FDC42C"}
               strokeWidth="2"
               strokeLinejoin="round"
               strokeLinecap="round"
@@ -140,15 +156,15 @@ export const LineChart: React.FC<LineChartProps> = ({
             {/* Start and end points */}
             <circle
               cx="0"
-              cy={100 - ((data[0] - minValue) / range) * 100}
+              cy={100 - ((data[0] - dataMin) / range) * 100}
               r="3"
-              fill={isProfit ? "#FDC42C" : "#CB2026"}
+              fill={isLoss ? "#CB2026" : "#FDC42C"}
             />
             <circle
               cx="100%"
-              cy={100 - ((data[data.length - 1] - minValue) / range) * 100}
+              cy={100 - ((data[data.length - 1] - dataMin) / range) * 100}
               r="3"
-              fill={isProfit ? "#FDC42C" : "#CB2026"}
+              fill={isLoss ? "#CB2026" : "#FDC42C"}
             />
           </svg>
         </div>
@@ -168,7 +184,7 @@ export const LineChart: React.FC<LineChartProps> = ({
         <div className="flex justify-between items-center">
           <span className="text-[#999999]">최종 잔액:</span>
           <span
-            className={`font-bold ${isProfit ? "text-[#FDC42C]" : "text-[#CB2026]"}`}
+            className={`font-bold ${isLoss ? "text-[#CB2026]" : "text-[#FDC42C]"}`}
           >
             {finalValue.toFixed(1)}
           </span>
@@ -176,9 +192,9 @@ export const LineChart: React.FC<LineChartProps> = ({
         <div className="flex justify-between items-center mt-1">
           <span className="text-[#999999]">변화율:</span>
           <span
-            className={`font-bold ${isProfit ? "text-[#FDC42C]" : "text-[#CB2026]"}`}
+            className={`font-bold ${isLoss ? "text-[#CB2026]" : "text-[#FDC42C]"}`}
           >
-            {((finalValue / 100 - 1) * 100).toFixed(1)}%
+            {((finalValue / initialValue - 1) * 100).toFixed(1)}%
           </span>
         </div>
       </div>
