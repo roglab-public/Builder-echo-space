@@ -4,6 +4,7 @@ import { getScoreCategories } from "@/data/slot-machines";
 import { SlotTabs } from "./SlotTabs";
 import { TabContent } from "./TabContent";
 import { useState } from "react";
+import { Badge } from "@/components/ui/badge";
 
 interface SlotMachineDetailsProps {
   slotMachine: SlotMachine;
@@ -12,7 +13,16 @@ interface SlotMachineDetailsProps {
 export const SlotMachineDetails = ({
   slotMachine,
 }: SlotMachineDetailsProps) => {
-  const { title, dev, description, rtp, betAmount, updatedDate } = slotMachine;
+  const {
+    title,
+    dev,
+    description,
+    rtp,
+    betAmount,
+    updatedDate,
+    volatilityScore,
+    volatility,
+  } = slotMachine;
   const categories = getScoreCategories(slotMachine);
 
   // Get category IDs dynamically from categories
@@ -33,13 +43,47 @@ export const SlotMachineDetails = ({
     return `${year}년 ${month}월 ${day}일`;
   };
 
+  // Format date for header display
+  const formatShortDate = (dateString: string) => {
+    return dateString.substring(0, 10);
+  };
+
   return (
     <div className="space-y-8">
-      {/* Header section with title and description */}
-      <div>
-        <h2 className="text-2xl font-bold mb-6 text-brand-yellow" lang="ko">
-          {title.kr} 리뷰
-        </h2>
+      {/* Header section with title and controls */}
+      <div className="flex items-center justify-between gap-4 w-full max-w-3xl mx-auto">
+        <div>
+          <h1
+            className="text-[30px] font-bold leading-9 tracking-[-0.75px]"
+            lang="en"
+          >
+            {title.en}
+          </h1>
+          <p className="text-[#999999]">
+            <span lang="en">{dev.en}</span>
+            <span> | 등록일: </span>
+            <span>{formatShortDate(updatedDate)}</span>
+          </p>
+        </div>
+        <div className="flex items-center gap-2">
+          <a
+            href="#"
+            className="inline-flex items-center justify-center rounded-md bg-[#1f1f1f] border border-[#333333] px-3 h-9 text-sm font-medium leading-5 whitespace-nowrap transition-colors"
+          >
+            정보 수정
+          </a>
+          <Badge
+            variant="red"
+            className="flex items-center gap-1 text-xs font-semibold py-0.5 px-2.5"
+          >
+            <span>변동성:</span>
+            <span>{volatilityScore.toFixed(1)}%</span>
+          </Badge>
+        </div>
+      </div>
+
+      {/* Description section */}
+      <div className="w-full max-w-3xl mx-auto">
         <p className="text-muted-foreground mb-6" lang="ko">
           {description.kr}
         </p>
