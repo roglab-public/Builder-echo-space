@@ -167,6 +167,15 @@
   }
 }
 
+@keyframes flipDown {
+  0% {
+    transform: rotateX(0);
+  }
+  100% {
+    transform: rotateX(-90deg);
+  }
+}
+
 .animate-flipIn {
   animation-name: flipIn;
   animation-fill-mode: both;

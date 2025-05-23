@@ -1,4 +1,4 @@
-import { CountUp } from "@/components/animations/CountUp";
+import { FlipCounter } from "@/components/animations/FlipCounter";
 import { cn } from "@/lib/utils";
 
 interface LargeScoreCardProps {
@@ -31,7 +31,7 @@ export const LargeScoreCard = ({
         <div className="flex items-center justify-center flex-col min-h-[100px]">
           <div className="text-center">
             <div className="font-extrabold py-1 px-1 relative">
-              <CountUp value={score} duration={1.5} />
+              <FlipCounter value={score} duration={1.5} />
             </div>
           </div>
         </div>

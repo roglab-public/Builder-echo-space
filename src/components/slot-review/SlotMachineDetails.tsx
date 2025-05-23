@@ -8,6 +8,8 @@ import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { ScreenshotsContent } from "./ScreenshotsContent";
 import { PatternAIContent } from "./PatternAIContent";
+import { LineChart } from "@/components/charts/LineChart";
+import { RadarChart } from "@/components/charts/RadarChart";
 
 interface SlotMachineDetailsProps {
   slotMachine: SlotMachine;
@@ -16,8 +18,26 @@ interface SlotMachineDetailsProps {
 export const SlotMachineDetails = ({
   slotMachine,
 }: SlotMachineDetailsProps) => {
-  const { title, dev, description, updatedDate, overallScore, profitScore } =
-    slotMachine;
+  const {
+    title,
+    dev,
+    description,
+    updatedDate,
+    overallScore,
+    profitScore,
+    volatility,
+    volatilityScore,
+    hitFrequency,
+    hitFrequencyScore,
+    profithitRatio,
+    profithitRatioScore,
+    maxMultiplier,
+    maxMultiplierScore,
+    avgMultiplier,
+    avgMultiplierScore,
+    betAmount,
+  } = slotMachine;
+
   const categories = getScoreCategories(slotMachine);
 
   // Define all tab options
@@ -25,7 +45,7 @@ export const SlotMachineDetails = ({
     { id: "overview", label: "전체" },
     { id: "volatility", label: "변동성" },
     { id: "hitRate", label: "히트율" },
-    { id: "profitHitRate", label: "흑자 히트율" },
+    { id: "profitHitRate", label: "��자 히트율" },
     { id: "maxMultiplier", label: "최고 배수" },
     { id: "avgMultiplier", label: "평균 배수" },
     { id: "patternAI", label: "PatternAI™" },
@@ -44,6 +64,15 @@ export const SlotMachineDetails = ({
   const getBadgeVariant = (score: number) => {
     return score >= 50 ? "yellow" : "red";
   };
+
+  // Metrics for radar chart
+  const radarMetrics = [
+    { name: "변동성", value: volatilityScore, maxValue: 100 },
+    { name: "히트율", value: hitFrequencyScore, maxValue: 100 },
+    { name: "흑자 히트율", value: profithitRatioScore, maxValue: 100 },
+    { name: "최고 배수", value: maxMultiplierScore / 10, maxValue: 100 }, // Scale down
+    { name: "평균 배수", value: avgMultiplierScore, maxValue: 120 },
+  ];
 
   // Get the content for the category tabs
   const getCategoryContent = (tabId: string) => {
@@ -65,6 +94,13 @@ export const SlotMachineDetails = ({
       // For overview, show all categories
       return (
         <div className="space-y-6">
+          {/* Charts section */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <LineChart betAmount={betAmount} />
+            <RadarChart metrics={radarMetrics} />
+          </div>
+
+          {/* Categories */}
           {categories.map((category, index) => (
             <div
               key={index}
