@@ -3,11 +3,13 @@ import { SlotMachineCard } from "@/components/slot-review/SlotMachineCard";
 
 const Index = () => {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-100 to-slate-200">
+    <div className="min-h-screen bg-background">
       <div className="container mx-auto py-8 px-4">
         <header className="text-center mb-12">
-          <h1 className="text-4xl font-bold mb-4">슬롯 머신 리뷰</h1>
-          <p className="text-xl text-muted-foreground">
+          <h1 className="text-4xl font-bold mb-4 text-foreground" lang="ko">
+            슬롯 머신 리뷰
+          </h1>
+          <p className="text-xl text-muted-foreground" lang="ko">
             최고의 슬롯 머신을 찾기 위한 전문적인 리뷰 사이트
           </p>
         </header>

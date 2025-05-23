@@ -23,17 +23,17 @@ export const SlotMachineCard = ({
 
   // Determine color based on score
   const getScoreColor = (score: number) => {
-    if (score >= 80) return "bg-green-500";
+    if (score >= 80) return "bg-brand-yellow";
     if (score >= 60) return "bg-amber-500";
     if (score >= 40) return "bg-orange-500";
-    return "bg-red-500";
+    return "bg-brand-red";
   };
 
   return (
     <Link to={`/slot-machine/${id}`}>
       <Card
         className={cn(
-          "overflow-hidden hover:shadow-md transition-shadow",
+          "overflow-hidden hover:shadow-md transition-shadow border-[#707070]",
           className,
         )}
       >
@@ -48,13 +48,19 @@ export const SlotMachineCard = ({
           </div>
         </div>
         <CardHeader className="pb-2">
-          <CardTitle className="text-xl">{title.kr}</CardTitle>
-          <p className="text-sm text-muted-foreground">{dev.kr}</p>
+          <CardTitle className="text-xl" lang="ko">
+            {title.kr}
+          </CardTitle>
+          <p className="text-sm text-muted-foreground" lang="ko">
+            {dev.kr}
+          </p>
         </CardHeader>
         <CardContent className="pb-2">
           <div className="space-y-2">
             <div className="flex justify-between">
-              <span className="text-sm font-medium">종합 점수</span>
+              <span className="text-sm font-medium" lang="ko">
+                종합 점수
+              </span>
               <span className="font-medium">{overallScore}</span>
             </div>
             <Progress
@@ -65,7 +71,10 @@ export const SlotMachineCard = ({
           </div>
         </CardContent>
         <CardFooter className="pt-0">
-          <span className="text-sm text-muted-foreground">
+          <span
+            className="text-sm text-muted-foreground hover:text-brand-yellow transition-colors"
+            lang="ko"
+          >
             자세히 보기 &rarr;
           </span>
         </CardFooter>

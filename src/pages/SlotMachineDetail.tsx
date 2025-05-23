@@ -12,15 +12,16 @@ const SlotMachineDetail = () => {
     return (
       <div className="container mx-auto py-12 px-4">
         <div className="text-center">
-          <h1 className="text-3xl font-bold mb-4">
+          <h1 className="text-3xl font-bold mb-4" lang="ko">
             슬롯 머신을 찾을 수 없습니다
           </h1>
-          <p className="text-muted-foreground mb-6">
+          <p className="text-muted-foreground mb-6" lang="ko">
             요청하신 슬롯 머신 정보를 찾을 수 없습니다.
           </p>
           <button
             onClick={() => navigate("/")}
-            className="px-4 py-2 bg-primary text-primary-foreground rounded-md"
+            className="px-4 py-2 bg-brand-yellow text-black rounded-md"
+            lang="ko"
           >
             홈으로 돌아가기
           </button>
@@ -30,10 +31,11 @@ const SlotMachineDetail = () => {
   }
 
   return (
-    <div className="container mx-auto py-8 px-4">
+    <div className="container mx-auto py-8 px-4 bg-background">
       <button
         onClick={() => navigate("/")}
-        className="mb-6 flex items-center text-muted-foreground hover:text-primary transition-colors"
+        className="mb-6 flex items-center text-muted-foreground hover:text-brand-yellow transition-colors"
+        lang="ko"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
