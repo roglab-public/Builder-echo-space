@@ -2,6 +2,7 @@ import React, { useRef, useState, useEffect } from "react";
 import {
   BarChart as RechartsBarChart,
   Bar,
+  Cell,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -51,6 +52,11 @@ export const BarChart: React.FC<BarChartProps> = ({
     };
   }, []);
 
+  // Get bar colors based on name
+  const getBarColor = (name: string) => {
+    return name === primaryBarName ? "#FDC42C" : "#595959";
+  };
+
   return (
     <div
       ref={chartRef}
@@ -98,13 +104,14 @@ export const BarChart: React.FC<BarChartProps> = ({
               />
               <Bar
                 dataKey="value"
-                fill={(entry) =>
-                  entry.name === primaryBarName ? "#FDC42C" : "#595959"
-                }
                 radius={[4, 4, 0, 0]}
                 isAnimationActive={isVisible}
                 animationDuration={1500}
-              />
+              >
+                {data.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={getBarColor(entry.name)} />
+                ))}
+              </Bar>
             </RechartsBarChart>
           </ResponsiveContainer>
         )}
