@@ -84,61 +84,64 @@ export const SlotMachineDetails = ({
 
       {/* Score categories */}
       <div className="space-y-6 w-full max-w-3xl mx-auto">
-        {categories.map((category: ScoreCategory, index: number) => (
-          <div
-            key={index}
-            className="border border-[#707070] p-4 rounded-lg bg-card"
-          >
-            <h3 className="text-xl font-bold mb-4 text-brand-yellow" lang="ko">
-              {category.title}
-            </h3>
-
-            {/* Add tabs after the "전체 평가" section */}
-            {category.title === "전체 평가" && (
-              <div className="mt-6">
-                <SlotTabs
-                  options={tabOptions}
-                  defaultTab="topPerforming"
-                  onChange={setActiveTab}
-                  className="mb-4"
-                />
-
-                <TabContent id="topPerforming" activeTab={activeTab}>
-                  <div className="p-4 border border-[#707070] rounded-lg bg-[#1f1f1f]">
-                    <p lang="ko" className="text-[#999999]">
-                      상위 성능 슬롯에 대한 정보가 여기에 표시됩니다. 높은 RTP와
-                      우수한 히트율을 가진 슬롯 머신입니다.
-                    </p>
-                  </div>
-                </TabContent>
-
-                <TabContent id="topRanked" activeTab={activeTab}>
-                  <div className="p-4 border border-[#707070] rounded-lg bg-[#1f1f1f]">
-                    <p lang="ko" className="text-[#999999]">
-                      상위 평점 슬롯에 대한 정보가 여기에 표시됩니다.
-                      사용자들에게 높은 평가를 받은 슬롯 머신입니다.
-                    </p>
-                  </div>
-                </TabContent>
-
-                <TabContent id="recommended" activeTab={activeTab}>
-                  <div className="p-4 border border-[#707070] rounded-lg bg-[#1f1f1f]">
-                    <p lang="ko" className="text-[#999999]">
-                      추천 슬롯에 대한 정보가 여기에 표시됩니다. 전문가가
-                      추천하는 슬�� 머신입니다.
-                    </p>
-                  </div>
-                </TabContent>
+        {categories.map((category: ScoreCategory, index: number) => {
+          // Only render the category content, without tabs inside
+          return (
+            <div
+              key={index}
+              className="border border-[#707070] p-4 rounded-lg bg-card"
+            >
+              <h3
+                className="text-xl font-bold mb-4 text-brand-yellow"
+                lang="ko"
+              >
+                {category.title}
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {category.metrics.map((metric, metricIndex) => (
+                  <ScoreCard key={metricIndex} metric={metric} />
+                ))}
               </div>
-            )}
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {category.metrics.map((metric, metricIndex) => (
-                <ScoreCard key={metricIndex} metric={metric} />
-              ))}
             </div>
+          );
+        })}
+      </div>
+
+      {/* Tabs section - moved outside of the category mapping */}
+      <div className="mt-6 w-full max-w-3xl mx-auto">
+        <SlotTabs
+          options={tabOptions}
+          defaultTab="topPerforming"
+          onChange={setActiveTab}
+          className="mb-4"
+        />
+
+        <TabContent id="topPerforming" activeTab={activeTab}>
+          <div className="p-4 border border-[#707070] rounded-lg bg-[#1f1f1f]">
+            <p lang="ko" className="text-[#999999]">
+              상위 성능 슬롯에 대한 정보가 여기에 표시됩니다. 높은 RTP와 우수한
+              히트율을 가진 슬롯 머신입니다.
+            </p>
           </div>
-        ))}
+        </TabContent>
+
+        <TabContent id="topRanked" activeTab={activeTab}>
+          <div className="p-4 border border-[#707070] rounded-lg bg-[#1f1f1f]">
+            <p lang="ko" className="text-[#999999]">
+              상위 평점 슬롯에 대한 정보가 여기에 표시됩니다. 사용자들에게 높은
+              평가를 받은 슬롯 머신입니다.
+            </p>
+          </div>
+        </TabContent>
+
+        <TabContent id="recommended" activeTab={activeTab}>
+          <div className="p-4 border border-[#707070] rounded-lg bg-[#1f1f1f]">
+            <p lang="ko" className="text-[#999999]">
+              추천 슬롯에 대한 정보가 여기에 표시됩니다. 전문가가 추천하는 슬롯
+              머신입니다.
+            </p>
+          </div>
+        </TabContent>
       </div>
 
       {/* Screenshots section */}
