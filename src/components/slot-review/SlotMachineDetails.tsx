@@ -18,10 +18,9 @@ export const SlotMachineDetails = ({
     dev,
     description,
     rtp,
-    betAmount,
     updatedDate,
-    volatilityScore,
-    volatility,
+    overallScore,
+    profitScore,
   } = slotMachine;
   const categories = getScoreCategories(slotMachine);
 
@@ -48,9 +47,14 @@ export const SlotMachineDetails = ({
     return dateString.substring(0, 10);
   };
 
+  // Determine badge color based on score
+  const getBadgeVariant = (score: number) => {
+    return score >= 50 ? "yellow" : "red";
+  };
+
   return (
     <div className="space-y-8">
-      {/* Header section with title and controls */}
+      {/* Header section with title and score badges */}
       <div className="flex items-center justify-between gap-4 w-full max-w-3xl mx-auto">
         <div>
           <h1
@@ -66,27 +70,19 @@ export const SlotMachineDetails = ({
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <a
-            href="#"
-            className="inline-flex items-center justify-center rounded-md bg-[#1f1f1f] border border-[#333333] px-3 h-9 text-sm font-medium leading-5 whitespace-nowrap transition-colors"
-          >
-            정보 수정
-          </a>
           <Badge
-            variant="red"
+            variant={getBadgeVariant(overallScore)}
             className="flex items-center gap-1 text-xs font-semibold py-0.5 px-2.5"
           >
-            <span>변동성:</span>
-            <span>{volatilityScore.toFixed(1)}%</span>
+            {overallScore}
+          </Badge>
+          <Badge
+            variant={getBadgeVariant(profitScore)}
+            className="flex items-center gap-1 text-xs font-semibold py-0.5 px-2.5"
+          >
+            {profitScore}
           </Badge>
         </div>
-      </div>
-
-      {/* Description section */}
-      <div className="w-full max-w-3xl mx-auto">
-        <p className="text-muted-foreground mb-6" lang="ko">
-          {description.kr}
-        </p>
       </div>
 
       {/* Image section */}
@@ -98,34 +94,21 @@ export const SlotMachineDetails = ({
         />
       </div>
 
-      {/* Basic info section */}
+      {/* Basic info section - replaced with description only */}
       <div className="border border-[#707070] p-4 rounded-lg bg-card w-full max-w-3xl mx-auto">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <h3 className="text-sm font-medium text-muted-foreground" lang="ko">
-              제공 업체
-            </h3>
-            <p lang="ko">{dev.kr}</p>
-          </div>
-          <div>
-            <h3 className="text-sm font-medium text-muted-foreground" lang="ko">
-              RTP (Return to Player)
-            </h3>
-            <p>{rtp}%</p>
-          </div>
-          <div>
-            <h3 className="text-sm font-medium text-muted-foreground" lang="ko">
-              기본 베팅 금액
-            </h3>
-            <p>{betAmount}</p>
-          </div>
-          <div>
-            <h3 className="text-sm font-medium text-muted-foreground" lang="ko">
-              업데이트 날짜
-            </h3>
-            <p>{formatDate(updatedDate.substring(0, 10))}</p>
-          </div>
-        </div>
+        <p className="text-muted-foreground" lang="ko">
+          {description.kr}
+        </p>
+      </div>
+
+      {/* Edit button moved below */}
+      <div className="w-full max-w-3xl mx-auto flex justify-end">
+        <a
+          href="#"
+          className="inline-flex items-center justify-center rounded-md bg-[#1f1f1f] border border-[#333333] px-3 h-9 text-sm font-medium leading-5 whitespace-nowrap transition-colors"
+        >
+          정보 수정
+        </a>
       </div>
 
       {/* Overall Evaluation section (always shown) */}
