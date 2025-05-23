@@ -14,6 +14,7 @@ import { HitRateContent } from "./HitRateContent";
 import { ProfitHitRateContent } from "./ProfitHitRateContent";
 import { MaxMultiplierContent } from "./MaxMultiplierContent";
 import { AvgMultiplierContent } from "./AvgMultiplierContent";
+import { NavigationButtons } from "./NavigationButtons";
 
 interface SlotMachineDetailsProps {
   slotMachine: SlotMachine;
@@ -65,25 +66,107 @@ export const SlotMachineDetails = ({
     return score >= 50 ? "yellow" : "red";
   };
 
+  // Handle navigation between tabs
+  const handleNavigate = (tabId: string) => {
+    setActiveTab(tabId);
+    // Scroll to the top of the tab content
+    window.scrollTo({
+      top: document.getElementById("tab-content")?.offsetTop || 0,
+      behavior: "smooth",
+    });
+  };
+
   // Get the content for the category tabs
   const getCategoryContent = (tabId: string) => {
-    // For special tabs, return specific components
+    // For special tabs, return specific components with navigation buttons
     if (tabId === "overview") {
-      return <OverviewContent slotMachine={slotMachine} />;
+      return (
+        <>
+          <OverviewContent slotMachine={slotMachine} />
+          <NavigationButtons
+            currentTab={tabId}
+            tabOptions={tabOptions}
+            onNavigate={handleNavigate}
+          />
+        </>
+      );
     } else if (tabId === "volatility") {
-      return <VolatilityContent slotMachine={slotMachine} />;
+      return (
+        <>
+          <VolatilityContent slotMachine={slotMachine} />
+          <NavigationButtons
+            currentTab={tabId}
+            tabOptions={tabOptions}
+            onNavigate={handleNavigate}
+          />
+        </>
+      );
     } else if (tabId === "hitRate") {
-      return <HitRateContent slotMachine={slotMachine} />;
+      return (
+        <>
+          <HitRateContent slotMachine={slotMachine} />
+          <NavigationButtons
+            currentTab={tabId}
+            tabOptions={tabOptions}
+            onNavigate={handleNavigate}
+          />
+        </>
+      );
     } else if (tabId === "profitHitRate") {
-      return <ProfitHitRateContent slotMachine={slotMachine} />;
+      return (
+        <>
+          <ProfitHitRateContent slotMachine={slotMachine} />
+          <NavigationButtons
+            currentTab={tabId}
+            tabOptions={tabOptions}
+            onNavigate={handleNavigate}
+          />
+        </>
+      );
     } else if (tabId === "maxMultiplier") {
-      return <MaxMultiplierContent slotMachine={slotMachine} />;
+      return (
+        <>
+          <MaxMultiplierContent slotMachine={slotMachine} />
+          <NavigationButtons
+            currentTab={tabId}
+            tabOptions={tabOptions}
+            onNavigate={handleNavigate}
+          />
+        </>
+      );
     } else if (tabId === "avgMultiplier") {
-      return <AvgMultiplierContent slotMachine={slotMachine} />;
+      return (
+        <>
+          <AvgMultiplierContent slotMachine={slotMachine} />
+          <NavigationButtons
+            currentTab={tabId}
+            tabOptions={tabOptions}
+            onNavigate={handleNavigate}
+          />
+        </>
+      );
     } else if (tabId === "patternAI") {
-      return <PatternAIContent slotMachine={slotMachine} />;
+      return (
+        <>
+          <PatternAIContent slotMachine={slotMachine} />
+          <NavigationButtons
+            currentTab={tabId}
+            tabOptions={tabOptions}
+            onNavigate={handleNavigate}
+          />
+        </>
+      );
     } else if (tabId === "screenshots") {
-      return <ScreenshotsContent slotMachine={slotMachine} />;
+      return (
+        <>
+          <ScreenshotsContent slotMachine={slotMachine} />
+          <NavigationButtons
+            currentTab={tabId}
+            tabOptions={tabOptions}
+            onNavigate={handleNavigate}
+          />
+        </>
+      );
     }
 
     return null;
@@ -160,7 +243,7 @@ export const SlotMachineDetails = ({
         />
 
         {/* Content for the selected tab */}
-        <div>{getCategoryContent(activeTab)}</div>
+        <div id="tab-content">{getCategoryContent(activeTab)}</div>
       </div>
 
       {/* Edit button at the bottom */}
