@@ -10,6 +10,10 @@ import { ScreenshotsContent } from "./ScreenshotsContent";
 import { PatternAIContent } from "./PatternAIContent";
 import { OverviewContent } from "./OverviewContent";
 import { VolatilityContent } from "./VolatilityContent";
+import { HitRateContent } from "./HitRateContent";
+import { ProfitHitRateContent } from "./ProfitHitRateContent";
+import { MaxMultiplierContent } from "./MaxMultiplierContent";
+import { AvgMultiplierContent } from "./AvgMultiplierContent";
 
 interface SlotMachineDetailsProps {
   slotMachine: SlotMachine;
@@ -63,42 +67,23 @@ export const SlotMachineDetails = ({
 
   // Get the content for the category tabs
   const getCategoryContent = (tabId: string) => {
-    // Map tab IDs to category indices
-    const tabToCategory: Record<string, number> = {
-      volatility: 1, // Index of volatility in categories array
-      hitRate: 2,
-      profitHitRate: 3,
-      maxMultiplier: 4,
-      avgMultiplier: 5,
-    };
-
     // For special tabs, return specific components
     if (tabId === "overview") {
       return <OverviewContent slotMachine={slotMachine} />;
     } else if (tabId === "volatility") {
       return <VolatilityContent slotMachine={slotMachine} />;
+    } else if (tabId === "hitRate") {
+      return <HitRateContent slotMachine={slotMachine} />;
+    } else if (tabId === "profitHitRate") {
+      return <ProfitHitRateContent slotMachine={slotMachine} />;
+    } else if (tabId === "maxMultiplier") {
+      return <MaxMultiplierContent slotMachine={slotMachine} />;
+    } else if (tabId === "avgMultiplier") {
+      return <AvgMultiplierContent slotMachine={slotMachine} />;
     } else if (tabId === "patternAI") {
       return <PatternAIContent slotMachine={slotMachine} />;
     } else if (tabId === "screenshots") {
       return <ScreenshotsContent slotMachine={slotMachine} />;
-    } else {
-      // For other tabs, show the corresponding category
-      const categoryIndex = tabToCategory[tabId];
-      if (categoryIndex !== undefined && categoryIndex < categories.length) {
-        const category = categories[categoryIndex];
-        return (
-          <div className="border border-[#707070] p-4 rounded-lg bg-card">
-            <h3 className="text-xl font-bold mb-4 text-brand-yellow" lang="ko">
-              {category.title}
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {category.metrics.map((metric, metricIndex) => (
-                <ScoreCard key={metricIndex} metric={metric} />
-              ))}
-            </div>
-          </div>
-        );
-      }
     }
 
     return null;

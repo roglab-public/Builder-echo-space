@@ -99,7 +99,7 @@ export const BarChart: React.FC<BarChartProps> = ({
               <Bar
                 dataKey="value"
                 fill={(entry) =>
-                  entry.name === primaryBarName ? "#FDC42C" : "#555"
+                  entry.name === primaryBarName ? "#FDC42C" : "#595959"
                 }
                 radius={[4, 4, 0, 0]}
                 isAnimationActive={isVisible}
