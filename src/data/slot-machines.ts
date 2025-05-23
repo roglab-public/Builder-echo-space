@@ -22,7 +22,7 @@ export const slotMachines: SlotMachine[] = [
     betAmount: 1,
     rtp: 96.5,
     imageUrl:
-      "https://drive.google.com/uc?export=view&id=1lQfNBmauUTP_W4ag46AwLYlbXNDPummD",
+      "https://drive.google.com/uc?export=download&id=1lQfNBmauUTP_W4ag46AwLYlbXNDPummD",
     title: {
       kr: "포춘 드래곤",
       en: "Fortune Dragon",

@@ -1,5 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { slotMachines } from "@/data/slot-machines";
+import { GoogleDriveImage } from "@/components/ui/google-drive-image";
 import { ImageWithFallback } from "@/components/ui/image-with-fallback";
 
 const Dashboard = () => {
@@ -68,10 +69,12 @@ const Dashboard = () => {
         <CardContent>
           <div className="flex items-center gap-4">
             <div className="w-16 h-16 rounded-md overflow-hidden bg-muted">
-              <ImageWithFallback
+              <GoogleDriveImage
                 src={topRatedSlot.imageUrl}
                 alt={topRatedSlot.title.kr}
                 fallbackSrc="/placeholder.svg"
+                className="w-full h-full"
+              />
               />
             </div>
             <div>

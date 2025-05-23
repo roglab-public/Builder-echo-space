@@ -1,5 +1,5 @@
 import { SlotMachine } from "@/types";
-import { ImageWithFallback } from "@/components/ui/image-with-fallback";
+import { GoogleDriveImage } from "@/components/ui/google-drive-image";
 
 interface ScreenshotsContentProps {
   slotMachine: SlotMachine;
@@ -22,10 +22,11 @@ export const ScreenshotsContent = ({
               key={index}
               className="aspect-video overflow-hidden rounded-lg border border-[#707070]"
             >
-              <ImageWithFallback
+              <GoogleDriveImage
                 src={screenshot} // Use actual screenshot URL if available
                 fallbackSrc="/placeholder.svg"
                 alt={`${title.kr} 스크린샷 ${index + 1}`}
+              />
               />
             </div>
           ))
