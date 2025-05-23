@@ -3,7 +3,6 @@ import {
   RadarChart as RechartsRadarChart,
   PolarGrid,
   PolarAngleAxis,
-  PolarRadiusAxis,
   Radar,
   ResponsiveContainer,
   Tooltip,
@@ -77,11 +76,7 @@ export const RadarChart: React.FC<RadarChartProps> = ({
               dataKey="name"
               tick={{ fill: "#999", fontSize: 12 }}
             />
-            <PolarRadiusAxis
-              angle={90}
-              domain={[0, "auto"]}
-              tick={{ fill: "#666" }}
-            />
+            {/* Removed PolarRadiusAxis to hide numbers */}
             <Tooltip
               contentStyle={{
                 backgroundColor: "#262626",
@@ -94,6 +89,7 @@ export const RadarChart: React.FC<RadarChartProps> = ({
               name="성능"
               dataKey="value"
               stroke="#FDC42C"
+              strokeWidth={3} // Increased outline thickness
               fill="#FDC42C"
               fillOpacity={0.2}
               isAnimationActive={isVisible}

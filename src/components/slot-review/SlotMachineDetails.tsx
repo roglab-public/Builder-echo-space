@@ -4,7 +4,7 @@ import { ScoreNumberCard } from "./ScoreNumberCard";
 import { getScoreCategories } from "@/data/slot-machines";
 import { SlotTabs } from "./SlotTabs";
 import { TabContent } from "./TabContent";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Badge } from "@/components/ui/badge";
 import { ScreenshotsContent } from "./ScreenshotsContent";
 import { PatternAIContent } from "./PatternAIContent";
@@ -20,6 +20,20 @@ export const SlotMachineDetails = ({
   const { title, dev, description, updatedDate, overallScore, profitScore } =
     slotMachine;
   const categories = getScoreCategories(slotMachine);
+  const [imageUrl, setImageUrl] = useState(slotMachine.imageUrl);
+
+  // Fallback image in case the original doesn't load
+  useEffect(() => {
+    const img = new Image();
+    img.onload = () => {
+      // Image loaded successfully
+    };
+    img.onerror = () => {
+      // Image failed to load, use fallback
+      setImageUrl("/placeholder.svg");
+    };
+    img.src = slotMachine.imageUrl;
+  }, [slotMachine.imageUrl]);
 
   // Define all tab options
   const tabOptions = [
@@ -122,12 +136,16 @@ export const SlotMachineDetails = ({
         </div>
       </div>
 
-      {/* Image section */}
+      {/* Image section with fallback handling */}
       <div className="aspect-video overflow-hidden rounded-lg border border-[#707070] w-full max-w-3xl mx-auto">
         <img
-          src={slotMachine.imageUrl}
+          src={imageUrl}
           alt={title.kr}
           className="object-cover w-full h-full"
+          onError={(e) => {
+            e.currentTarget.onerror = null; // Prevent infinite loop
+            e.currentTarget.src = "/placeholder.svg";
+          }}
         />
       </div>
 
@@ -140,7 +158,7 @@ export const SlotMachineDetails = ({
 
       {/* Score cards section */}
       <div className="grid grid-cols-2 gap-3 mt-6 w-full max-w-3xl mx-auto">
-        <ScoreNumberCard title="종합 점수" score={overallScore} />
+        <ScoreNumberCard title="종합 점��" score={overallScore} />
         <ScoreNumberCard title="수익 점수" score={profitScore} />
       </div>
 
