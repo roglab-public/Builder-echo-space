@@ -21,8 +21,7 @@ export const slotMachines: SlotMachine[] = [
     avgMultiplierScore: 118,
     betAmount: 1,
     rtp: 96.5,
-    imageUrl:
-      "https://demoimg.fusionbrain.ai/a/slot-machines/fortune-dragon.jpg",
+    imageUrl: "https://i.postimg.cc/64RfJrkJ/fortune-dragon.jpg",
     title: {
       kr: "포춘 드래곤",
       en: "Fortune Dragon",
