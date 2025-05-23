@@ -27,7 +27,6 @@ export const ScreenshotsContent = ({
                 fallbackSrc="/placeholder.svg"
                 alt={`${title.kr} 스크린샷 ${index + 1}`}
               />
-              />
             </div>
           ))
         ) : (

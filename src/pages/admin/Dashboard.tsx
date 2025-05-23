@@ -1,7 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { slotMachines } from "@/data/slot-machines";
 import { GoogleDriveImage } from "@/components/ui/google-drive-image";
-import { ImageWithFallback } from "@/components/ui/image-with-fallback";
 
 const Dashboard = () => {
   // Calculate statistics
@@ -74,7 +73,6 @@ const Dashboard = () => {
                 alt={topRatedSlot.title.kr}
                 fallbackSrc="/placeholder.svg"
                 className="w-full h-full"
-              />
               />
             </div>
             <div>

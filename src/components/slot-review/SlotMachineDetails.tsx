@@ -5,7 +5,6 @@ import { getScoreCategories } from "@/data/slot-machines";
 import { SlotTabs } from "./SlotTabs";
 import { TabContent } from "./TabContent";
 import { useState } from "react";
-import { ImageWithFallback } from "@/components/ui/image-with-fallback";
 import { Badge } from "@/components/ui/badge";
 import { ScreenshotsContent } from "./ScreenshotsContent";
 import { PatternAIContent } from "./PatternAIContent";
@@ -17,6 +16,7 @@ import { MaxMultiplierContent } from "./MaxMultiplierContent";
 import { AvgMultiplierContent } from "./AvgMultiplierContent";
 import { PlaySlotContent } from "./PlaySlotContent";
 import { NavigationButtons } from "./NavigationButtons";
+import { GoogleDriveImage } from "@/components/ui/google-drive-image";
 
 interface SlotMachineDetailsProps {
   slotMachine: SlotMachine;
@@ -25,15 +25,8 @@ interface SlotMachineDetailsProps {
 export const SlotMachineDetails = ({
   slotMachine,
 }: SlotMachineDetailsProps) => {
-  const {
-    title,
-    dev,
-    description,
-    updatedDate,
-    overallScore,
-    profitScore,
-    imageUrl,
-  } = slotMachine;
+  const { title, dev, description, updatedDate, overallScore, profitScore } =
+    slotMachine;
   const categories = getScoreCategories(slotMachine);
 
   // Format date for header display
@@ -223,10 +216,10 @@ export const SlotMachineDetails = ({
         </div>
       </div>
 
-      {/* Image section with ImageWithFallback component */}
-      <div className="aspect-video overflow-hidden rounded-lg border border-[#707070] w-full max-w-3xl mx-auto relative">
-        <ImageWithFallback
-          src={imageUrl}
+      {/* Image section with GoogleDriveImage component */}
+      <div className="overflow-hidden rounded-lg border border-[#707070] w-full max-w-3xl mx-auto relative aspect-video">
+        <GoogleDriveImage
+          src={slotMachine.imageUrl}
           alt={title.kr}
           fallbackSrc="/placeholder.svg"
         />
