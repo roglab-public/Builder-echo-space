@@ -7,6 +7,7 @@ import {
   ResponsiveContainer,
   Tooltip,
 } from "recharts";
+import { cn } from "@/lib/utils";
 
 interface MetricData {
   name: string;
@@ -61,9 +62,12 @@ export const RadarChart: React.FC<RadarChartProps> = ({
   return (
     <div
       ref={chartRef}
-      className={`border border-[#333333] rounded-lg p-4 bg-[#1f1f1f] ${className}`}
+      className={cn(
+        "border border-[#333333] rounded-lg p-4 bg-[#1f1f1f]",
+        className,
+      )}
     >
-      <h4 className="text-[#999999] text-sm mb-4">{title}</h4>
+      {title && <h4 className="text-[#999999] text-sm mb-2">{title}</h4>}
 
       <div
         className="transition-opacity duration-700 w-full h-[250px]"

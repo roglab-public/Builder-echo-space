@@ -8,6 +8,7 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
+import { cn } from "@/lib/utils";
 
 interface BarChartProps {
   title?: string;
@@ -15,6 +16,7 @@ interface BarChartProps {
   className?: string;
   primaryBarName?: string;
   yAxisUnit?: string;
+  description?: string;
 }
 
 export const BarChart: React.FC<BarChartProps> = ({
@@ -23,6 +25,7 @@ export const BarChart: React.FC<BarChartProps> = ({
   className,
   primaryBarName = "이 슬롯",
   yAxisUnit = "%",
+  description = "변동성 수치는 이 슬롯 머신이 일반적인 슬롯 머신들과 비교했을 때 얼마나 변동이 큰지를 나타냅니다. 높은 값은 더 큰 상금을 얻을 가능성이 있지만, 잦은 손실이 발생할 수 있음을 의미합니다.",
 }) => {
   const [isVisible, setIsVisible] = useState(false);
   const chartRef = useRef<HTMLDivElement>(null);
@@ -49,7 +52,13 @@ export const BarChart: React.FC<BarChartProps> = ({
   }, []);
 
   return (
-    <div ref={chartRef} className={`w-full ${className}`}>
+    <div
+      ref={chartRef}
+      className={cn(
+        "border border-[#333333] rounded-lg p-4 bg-[#1f1f1f]",
+        className,
+      )}
+    >
       {title && <h4 className="text-[#999999] text-sm mb-2">{title}</h4>}
 
       <div
@@ -99,6 +108,11 @@ export const BarChart: React.FC<BarChartProps> = ({
             </RechartsBarChart>
           </ResponsiveContainer>
         )}
+      </div>
+
+      {/* Description box */}
+      <div className="mt-4 mx-[10%] p-3 bg-[#262626] rounded border border-[#333333] text-sm text-[#999999]">
+        {description}
       </div>
     </div>
   );

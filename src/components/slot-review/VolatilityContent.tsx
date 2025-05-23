@@ -23,25 +23,28 @@ export const VolatilityContent = ({ slotMachine }: VolatilityContentProps) => {
         변동성 평가
       </h3>
 
-      {/* Bar chart for volatility comparison */}
-      <div className="mt-6">
-        <h4 className="text-base font-medium mb-2" lang="ko">
-          변동성 비교 ({volatility / 100}%)
-        </h4>
-        <BarChart data={comparisonData} yAxisUnit="%" className="mb-6" />
+      {/* Bar chart for volatility comparison in its own container */}
+      <div className="mb-6">
+        <BarChart
+          title={`변동성 비교 (${volatility / 100}%)`}
+          data={comparisonData}
+          yAxisUnit="%"
+          description="변동성 수치는 이 슬롯 머신이 일반적인 슬롯 머신들과 비교했을 때 얼마나 변동이 큰지를 나타냅니다. 높은 값은 더 큰 상금을 얻을 가능성이 있지만, 잦은 손실이 발생할 수 있음을 의미합니다."
+        />
       </div>
 
-      {/* Score progress bar */}
-      <div className="mt-6">
-        <ScoreProgressBar score={volatilityScore} className="mb-6" />
-      </div>
-
-      {/* Description box */}
-      <div className="mt-6 mx-[10%] p-3 bg-[#262626] rounded border border-[#333333] text-sm text-[#999999]">
-        변동성은 슬롯 머신의 지불 패턴 예측 가능성을 나타냅니다. 높은 변동성은
-        큰 상금을 얻을 가능성이 있지만, 잦은 손실이 발생할 수 있습니다. 낮은
-        변동성은 작은 상금을 자주 얻을 수 있지만, 큰 상금을 얻기는 어려울 수
-        있습니다.
+      {/* Score progress bar in its own container */}
+      <div className="border border-[#333333] rounded-lg p-4 bg-[#1f1f1f] mb-6">
+        <h4 className="text-[#999999] text-sm mb-2">변동성 점수 평가</h4>
+        <div className="py-4">
+          <ScoreProgressBar score={volatilityScore} />
+        </div>
+        <div className="mt-4 mx-[10%] p-3 bg-[#262626] rounded border border-[#333333] text-sm text-[#999999]">
+          변동성 점수는 슬롯 머신의 변동성을 0~100 사이의 점수로 나타낸
+          것입니다. 50점을 기준으로 하여, 점수가 높을수록 변동성이 큰 것을
+          의미합니다. 변동성이 큰 슬롯은 큰 승리를 기대할 수 있지만 잃을 확률도
+          높습니다.
+        </div>
       </div>
     </div>
   );
