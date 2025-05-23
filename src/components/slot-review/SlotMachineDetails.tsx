@@ -6,6 +6,8 @@ import { SlotTabs } from "./SlotTabs";
 import { TabContent } from "./TabContent";
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
+import { ScreenshotsContent } from "./ScreenshotsContent";
+import { PatternAIContent } from "./PatternAIContent";
 
 interface SlotMachineDetailsProps {
   slotMachine: SlotMachine;
@@ -14,34 +16,24 @@ interface SlotMachineDetailsProps {
 export const SlotMachineDetails = ({
   slotMachine,
 }: SlotMachineDetailsProps) => {
-  const {
-    title,
-    dev,
-    description,
-    rtp,
-    updatedDate,
-    overallScore,
-    profitScore,
-  } = slotMachine;
+  const { title, dev, description, updatedDate, overallScore, profitScore } =
+    slotMachine;
   const categories = getScoreCategories(slotMachine);
 
-  // Get category IDs dynamically from categories
-  const categoryIds = categories.map((cat, index) => ({
-    id: `category-${index}`,
-    label: cat.title,
-  }));
+  // Define all tab options
+  const tabOptions = [
+    { id: "overview", label: "전체" },
+    { id: "volatility", label: "변동성" },
+    { id: "hitRate", label: "히트율" },
+    { id: "profitHitRate", label: "흑자 히트율" },
+    { id: "maxMultiplier", label: "최고 배수" },
+    { id: "avgMultiplier", label: "평균 배수" },
+    { id: "patternAI", label: "PatternAI™" },
+    { id: "screenshots", label: "스크린샷" },
+  ];
 
-  // Skip the first category (Overall Evaluation) for tabs
-  const tabOptions = categoryIds.slice(1);
-
-  // Set default selected tab to the first category after Overall
-  const [activeTab, setActiveTab] = useState<string>(tabOptions[0]?.id || "");
-
-  // Format date for display
-  const formatDate = (dateString: string) => {
-    const [year, month, day] = dateString.split("-");
-    return `${year}년 ${month}월 ${day}일`;
-  };
+  // Set default selected tab
+  const [activeTab, setActiveTab] = useState<string>("overview");
 
   // Format date for header display
   const formatShortDate = (dateString: string) => {
@@ -51,6 +43,69 @@ export const SlotMachineDetails = ({
   // Determine badge color based on score
   const getBadgeVariant = (score: number) => {
     return score >= 50 ? "yellow" : "red";
+  };
+
+  // Get the content for the category tabs
+  const getCategoryContent = (tabId: string) => {
+    // Map tab IDs to category indices
+    const tabToCategory: Record<string, number> = {
+      volatility: 1, // Index of volatility in categories array
+      hitRate: 2,
+      profitHitRate: 3,
+      maxMultiplier: 4,
+      avgMultiplier: 5,
+    };
+
+    // For PatternAI and Screenshots, return specific components
+    if (tabId === "patternAI") {
+      return <PatternAIContent slotMachine={slotMachine} />;
+    } else if (tabId === "screenshots") {
+      return <ScreenshotsContent slotMachine={slotMachine} />;
+    } else if (tabId === "overview") {
+      // For overview, show all categories
+      return (
+        <div className="space-y-6">
+          {categories.map((category, index) => (
+            <div
+              key={index}
+              className="border border-[#707070] p-4 rounded-lg bg-card"
+            >
+              <h3
+                className="text-xl font-bold mb-4 text-brand-yellow"
+                lang="ko"
+              >
+                {category.title}
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {category.metrics.map((metric, metricIndex) => (
+                  <ScoreCard key={metricIndex} metric={metric} />
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      );
+    } else {
+      // For other tabs, show the corresponding category
+      const categoryIndex = tabToCategory[tabId];
+      if (categoryIndex !== undefined && categoryIndex < categories.length) {
+        const category = categories[categoryIndex];
+        return (
+          <div className="border border-[#707070] p-4 rounded-lg bg-card">
+            <h3 className="text-xl font-bold mb-4 text-brand-yellow" lang="ko">
+              {category.title}
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {category.metrics.map((metric, metricIndex) => (
+                <ScoreCard key={metricIndex} metric={metric} />
+              ))}
+            </div>
+          </div>
+        );
+      }
+    }
+
+    return null;
   };
 
   return (
@@ -97,76 +152,33 @@ export const SlotMachineDetails = ({
         />
       </div>
 
-      {/* Basic info section - replaced with description only */}
+      {/* Basic info section - description only */}
       <div className="border border-[#707070] p-4 rounded-lg bg-card w-full max-w-3xl mx-auto">
         <p className="text-muted-foreground" lang="ko">
           {description.kr}
         </p>
       </div>
 
-      {/* Overall Evaluation section with large score cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-6 w-full max-w-3xl mx-auto">
+      {/* Overall Evaluation section with large score cards - keep in single row */}
+      <div className="grid grid-cols-2 gap-3 mt-6 w-full max-w-3xl mx-auto">
         <LargeScoreCard title="종합 점수" score={overallScore} />
         <LargeScoreCard title="수익 점수" score={profitScore} />
       </div>
 
-      {/* Tabs section - positioned between Overall Evaluation and other categories */}
+      {/* Tabs section with horizontal scroll */}
       <div className="w-full max-w-3xl mx-auto">
         <SlotTabs
           options={tabOptions}
-          defaultTab={tabOptions[0]?.id}
+          defaultTab="overview"
           onChange={setActiveTab}
           className="mb-4"
         />
 
-        {/* Show tab content based on selected tab */}
-        {tabOptions.map((tabOption, index) => (
-          <TabContent
-            key={tabOption.id}
-            id={tabOption.id}
-            activeTab={activeTab}
-          >
-            <div className="border border-[#707070] p-4 rounded-lg bg-card">
-              <h3
-                className="text-xl font-bold mb-4 text-brand-yellow"
-                lang="ko"
-              >
-                {categories[index + 1].title}
-              </h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {categories[index + 1].metrics.map((metric, metricIndex) => (
-                  <ScoreCard key={metricIndex} metric={metric} />
-                ))}
-              </div>
-            </div>
-          </TabContent>
-        ))}
+        {/* Content for the selected tab */}
+        <div>{getCategoryContent(activeTab)}</div>
       </div>
 
-      {/* Screenshots section */}
-      {slotMachine.screenshots && slotMachine.screenshots.length > 0 && (
-        <div className="border border-[#707070] p-4 rounded-lg bg-card w-full max-w-3xl mx-auto">
-          <h3 className="text-xl font-bold mb-4 text-brand-yellow" lang="ko">
-            스크린샷
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {slotMachine.screenshots.map((screenshot, index) => (
-              <div
-                key={index}
-                className="aspect-video overflow-hidden rounded-lg border border-[#707070]"
-              >
-                <img
-                  src={`/placeholder.svg`} // Using placeholder since we don't have actual screenshots
-                  alt={`${title.kr} 스크린샷 ${index + 1}`}
-                  className="object-cover w-full h-full"
-                />
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Edit button moved to the very bottom */}
+      {/* Edit button at the bottom */}
       <div className="w-full max-w-3xl mx-auto flex justify-end">
         <a
           href="#"
