@@ -30,10 +30,10 @@ export const NavigationButtons: React.FC<NavigationButtonsProps> = ({
       {hasPrevious ? (
         <button
           onClick={() => onNavigate(previousTab!.id)}
-          className="flex items-center gap-2 px-4 py-2 bg-brand-yellow text-black font-medium rounded-lg transition-colors hover:bg-opacity-90"
+          className="flex items-center gap-2 px-4 py-2 bg-[rgba(74,74,74,1)] text-white font-medium rounded-lg transition-colors hover:bg-opacity-90"
         >
           <span>◀</span>
-          <span>({previousTab!.label})</span>
+          <span>{previousTab!.label}</span>
         </button>
       ) : (
         <div></div> // Empty div to maintain space for flexbox
@@ -42,9 +42,9 @@ export const NavigationButtons: React.FC<NavigationButtonsProps> = ({
       {hasNext && (
         <button
           onClick={() => onNavigate(nextTab!.id)}
-          className="flex items-center gap-2 px-4 py-2 bg-brand-yellow text-black font-medium rounded-lg transition-colors hover:bg-opacity-90"
+          className="flex items-center gap-2 px-4 py-2 bg-[rgba(74,74,74,1)] text-white font-medium rounded-lg transition-colors hover:bg-opacity-90"
         >
-          <span>({nextTab!.label})</span>
+          <span>{nextTab!.label}</span>
           <span>▶</span>
         </button>
       )}
