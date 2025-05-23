@@ -28,19 +28,12 @@ export const SlotMachineDetails = ({
     slotMachine;
   const categories = getScoreCategories(slotMachine);
   const [imageUrl, setImageUrl] = useState(slotMachine.imageUrl);
+  const [imageLoading, setImageLoading] = useState(true);
 
-  // Fallback image in case the original doesn't load
-  useEffect(() => {
-    const img = new Image();
-    img.onload = () => {
-      // Image loaded successfully
-    };
-    img.onerror = () => {
-      // Image failed to load, use fallback
-      setImageUrl("/placeholder.svg");
-    };
-    img.src = slotMachine.imageUrl;
-  }, [slotMachine.imageUrl]);
+  // Format date for header display
+  const formatShortDate = (dateString: string) => {
+    return dateString.substring(0, 10);
+  };
 
   // Define all tab options
   const tabOptions = [
@@ -57,11 +50,6 @@ export const SlotMachineDetails = ({
 
   // Set default selected tab
   const [activeTab, setActiveTab] = useState<string>("overview");
-
-  // Format date for header display
-  const formatShortDate = (dateString: string) => {
-    return dateString.substring(0, 10);
-  };
 
   // Determine badge color based on score
   const getBadgeVariant = (score: number) => {
@@ -229,15 +217,23 @@ export const SlotMachineDetails = ({
         </div>
       </div>
 
-      {/* Image section with fallback handling */}
-      <div className="aspect-video overflow-hidden rounded-lg border border-[#707070] w-full max-w-3xl mx-auto">
+      {/* Image section with loading state */}
+      <div className="aspect-video overflow-hidden rounded-lg border border-[#707070] w-full max-w-3xl mx-auto relative">
+        {imageLoading && (
+          <div className="absolute inset-0 flex items-center justify-center bg-[#1f1f1f] z-10">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-yellow"></div>
+          </div>
+        )}
         <img
           src={imageUrl}
           alt={title.kr}
           className="object-cover w-full h-full"
+          onLoad={() => setImageLoading(false)}
           onError={(e) => {
+            console.error("Image failed to load:", imageUrl);
             e.currentTarget.onerror = null; // Prevent infinite loop
             e.currentTarget.src = "/placeholder.svg";
+            setImageLoading(false);
           }}
         />
       </div>
