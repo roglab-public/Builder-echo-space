@@ -1,5 +1,6 @@
 import { SlotMachine, ScoreCategory } from "@/types";
 import { ScoreCard } from "./ScoreCard";
+import { LargeScoreCard } from "./LargeScoreCard";
 import { getScoreCategories } from "@/data/slot-machines";
 import { SlotTabs } from "./SlotTabs";
 import { TabContent } from "./TabContent";
@@ -8,12 +9,12 @@ import { Badge } from "@/components/ui/badge";
 import { ScreenshotsContent } from "./ScreenshotsContent";
 import { PatternAIContent } from "./PatternAIContent";
 import { OverviewContent } from "./OverviewContent";
-import { PlaySlotContent } from "./PlaySlotContent";
 import { VolatilityContent } from "./VolatilityContent";
 import { HitRateContent } from "./HitRateContent";
 import { ProfitHitRateContent } from "./ProfitHitRateContent";
 import { MaxMultiplierContent } from "./MaxMultiplierContent";
 import { AvgMultiplierContent } from "./AvgMultiplierContent";
+import { PlaySlotContent } from "./PlaySlotContent";
 import { NavigationButtons } from "./NavigationButtons";
 
 interface SlotMachineDetailsProps {
@@ -79,22 +80,25 @@ export const SlotMachineDetails = ({
 
   // Get the content for the category tabs
   const getCategoryContent = (tabId: string) => {
-    // For special tabs, return specific components
+    // Map tab IDs to category indices
+    const tabToCategory: Record<string, number> = {
+      volatility: 1, // Index of volatility in categories array
+      hitRate: 2,
+      profitHitRate: 3,
+      maxMultiplier: 4,
+      avgMultiplier: 5,
+    };
+
+    // For special tabs, return specific components with navigation buttons
     if (tabId === "overview") {
-      return <OverviewContent slotMachine={slotMachine} />;
-    } else if (tabId === "volatility") {
-      return <VolatilityContent slotMachine={slotMachine} />;
-    } else if (tabId === "playSlot") {
-      return <PlaySlotContent />;
-    } else if (tabId === "patternAI") {
-      return <PatternAIContent slotMachine={slotMachine} />;
-    } else if (tabId === "screenshots") {
-      return <ScreenshotsContent slotMachine={slotMachine} />;
-        <NavigationButtons
-          currentTab={tabId}
-          tabOptions={tabOptions}
-          onNavigate={handleNavigate}
-        />
+      return (
+        <>
+          <OverviewContent slotMachine={slotMachine} />
+          <NavigationButtons
+            currentTab={tabId}
+            tabOptions={tabOptions}
+            onNavigate={handleNavigate}
+          />
         </>
       );
     } else if (tabId === "volatility") {
@@ -145,6 +149,17 @@ export const SlotMachineDetails = ({
       return (
         <>
           <AvgMultiplierContent slotMachine={slotMachine} />
+          <NavigationButtons
+            currentTab={tabId}
+            tabOptions={tabOptions}
+            onNavigate={handleNavigate}
+          />
+        </>
+      );
+    } else if (tabId === "playSlot") {
+      return (
+        <>
+          <PlaySlotContent />
           <NavigationButtons
             currentTab={tabId}
             tabOptions={tabOptions}
@@ -236,8 +251,8 @@ export const SlotMachineDetails = ({
 
       {/* Score cards section */}
       <div className="grid grid-cols-2 gap-3 mt-6 w-full max-w-3xl mx-auto">
-        <ScoreNumberCard title="종합 점수" score={overallScore} />
-        <ScoreNumberCard title="수익 점수" score={profitScore} />
+        <LargeScoreCard title="종합 점수" score={overallScore} />
+        <LargeScoreCard title="수익 점수" score={profitScore} />
       </div>
 
       {/* Tabs section with horizontal scroll */}
