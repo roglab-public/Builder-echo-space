@@ -249,7 +249,7 @@ export const SlotMachineDetails = ({
       {/* Edit button at the bottom */}
       <div className="w-full max-w-3xl mx-auto flex justify-end">
         <a
-          href="#"
+          href={`/slot-machine/edit/${slotMachine.id}`}
           className="inline-flex items-center justify-center rounded-md bg-[#1f1f1f] border border-[#333333] px-3 h-9 text-sm font-medium leading-5 whitespace-nowrap transition-colors"
         >
           정보 수정
