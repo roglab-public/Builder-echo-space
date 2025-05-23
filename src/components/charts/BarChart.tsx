@@ -29,6 +29,7 @@ export const BarChart: React.FC<BarChartProps> = ({
   description = "변동성 수치는 이 슬롯 머신이 일반적인 슬롯 머신들과 비교했을 때 얼마나 변동이 큰지를 나타냅니다. 높은 값은 더 큰 상금을 얻을 가능성이 있지만, 잦은 손실이 발생할 수 있음을 의미합니다.",
 }) => {
   const [isVisible, setIsVisible] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const chartRef = useRef<HTMLDivElement>(null);
 
   // Add intersection observer to show chart when in viewport
@@ -47,8 +48,20 @@ export const BarChart: React.FC<BarChartProps> = ({
 
     observer.observe(chartRef.current);
 
+    // Check if device is mobile
+    const checkIsMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    // Initial check
+    checkIsMobile();
+
+    // Add resize listener
+    window.addEventListener("resize", checkIsMobile);
+
     return () => {
       observer.disconnect();
+      window.removeEventListener("resize", checkIsMobile);
     };
   }, []);
 
@@ -84,12 +97,18 @@ export const BarChart: React.FC<BarChartProps> = ({
               />
               <XAxis
                 dataKey="name"
-                tick={{ fill: "#999" }}
+                tick={{
+                  fill: "#999",
+                  fontSize: isMobile ? 10 : 12, // Smaller font on mobile
+                }}
                 axisLine={{ stroke: "#333" }}
                 tickLine={{ stroke: "#333" }}
               />
               <YAxis
-                tick={{ fill: "#999" }}
+                tick={{
+                  fill: "#999",
+                  fontSize: isMobile ? 10 : 12, // Smaller font on mobile
+                }}
                 axisLine={{ stroke: "#333" }}
                 tickLine={{ stroke: "#333" }}
                 unit={yAxisUnit}
