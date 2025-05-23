@@ -1,4 +1,5 @@
 import { SlotMachine } from "@/types";
+import { ImageWithFallback } from "@/components/ui/image-with-fallback";
 
 interface ScreenshotsContentProps {
   slotMachine: SlotMachine;
@@ -21,10 +22,10 @@ export const ScreenshotsContent = ({
               key={index}
               className="aspect-video overflow-hidden rounded-lg border border-[#707070]"
             >
-              <img
-                src={`/placeholder.svg`} // Using placeholder since we don't have actual screenshots
+              <ImageWithFallback
+                src={screenshot} // Use actual screenshot URL if available
+                fallbackSrc="/placeholder.svg"
                 alt={`${title.kr} 스크린샷 ${index + 1}`}
-                className="object-cover w-full h-full"
               />
             </div>
           ))

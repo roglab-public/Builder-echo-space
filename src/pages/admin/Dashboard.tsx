@@ -1,5 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { slotMachines } from "@/data/slot-machines";
+import { ImageWithFallback } from "@/components/ui/image-with-fallback";
 
 const Dashboard = () => {
   // Calculate statistics
@@ -67,14 +68,10 @@ const Dashboard = () => {
         <CardContent>
           <div className="flex items-center gap-4">
             <div className="w-16 h-16 rounded-md overflow-hidden bg-muted">
-              <img
+              <ImageWithFallback
                 src={topRatedSlot.imageUrl}
                 alt={topRatedSlot.title.kr}
-                className="object-cover w-full h-full"
-                onError={(e) => {
-                  e.currentTarget.onerror = null;
-                  e.currentTarget.src = "/placeholder.svg";
-                }}
+                fallbackSrc="/placeholder.svg"
               />
             </div>
             <div>

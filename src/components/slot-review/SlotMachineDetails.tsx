@@ -4,7 +4,8 @@ import { LargeScoreCard } from "./LargeScoreCard";
 import { getScoreCategories } from "@/data/slot-machines";
 import { SlotTabs } from "./SlotTabs";
 import { TabContent } from "./TabContent";
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import { ImageWithFallback } from "@/components/ui/image-with-fallback";
 import { Badge } from "@/components/ui/badge";
 import { ScreenshotsContent } from "./ScreenshotsContent";
 import { PatternAIContent } from "./PatternAIContent";
@@ -24,11 +25,16 @@ interface SlotMachineDetailsProps {
 export const SlotMachineDetails = ({
   slotMachine,
 }: SlotMachineDetailsProps) => {
-  const { title, dev, description, updatedDate, overallScore, profitScore } =
-    slotMachine;
+  const {
+    title,
+    dev,
+    description,
+    updatedDate,
+    overallScore,
+    profitScore,
+    imageUrl,
+  } = slotMachine;
   const categories = getScoreCategories(slotMachine);
-  const [imageUrl, setImageUrl] = useState(slotMachine.imageUrl);
-  const [imageLoading, setImageLoading] = useState(true);
 
   // Format date for header display
   const formatShortDate = (dateString: string) => {
@@ -217,24 +223,12 @@ export const SlotMachineDetails = ({
         </div>
       </div>
 
-      {/* Image section with loading state */}
+      {/* Image section with ImageWithFallback component */}
       <div className="aspect-video overflow-hidden rounded-lg border border-[#707070] w-full max-w-3xl mx-auto relative">
-        {imageLoading && (
-          <div className="absolute inset-0 flex items-center justify-center bg-[#1f1f1f] z-10">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-yellow"></div>
-          </div>
-        )}
-        <img
+        <ImageWithFallback
           src={imageUrl}
           alt={title.kr}
-          className="object-cover w-full h-full"
-          onLoad={() => setImageLoading(false)}
-          onError={(e) => {
-            console.error("Image failed to load:", imageUrl);
-            e.currentTarget.onerror = null; // Prevent infinite loop
-            e.currentTarget.src = "/placeholder.svg";
-            setImageLoading(false);
-          }}
+          fallbackSrc="/placeholder.svg"
         />
       </div>
 

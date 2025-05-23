@@ -9,6 +9,7 @@ import {
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
 import { Link } from "react-router-dom";
+import { ImageWithFallback } from "@/components/ui/image-with-fallback";
 
 interface SlotMachineCardProps {
   slotMachine: SlotMachine;
@@ -38,10 +39,10 @@ export const SlotMachineCard = ({
         )}
       >
         <div className="aspect-video relative overflow-hidden">
-          <img
+          <ImageWithFallback
             src={imageUrl}
             alt={title.kr}
-            className="object-cover w-full h-full transition-transform hover:scale-105"
+            className="transition-transform hover:scale-105"
           />
           <div className="absolute top-2 right-2 bg-black/70 text-white px-2 py-1 rounded text-sm">
             RTP: {rtp}%
