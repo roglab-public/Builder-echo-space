@@ -1,6 +1,5 @@
 import { SlotMachine, ScoreCategory } from "@/types";
 import { ScoreCard } from "./ScoreCard";
-import { ScoreNumberCard } from "./ScoreNumberCard";
 import { getScoreCategories } from "@/data/slot-machines";
 import { SlotTabs } from "./SlotTabs";
 import { TabContent } from "./TabContent";
@@ -9,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { ScreenshotsContent } from "./ScreenshotsContent";
 import { PatternAIContent } from "./PatternAIContent";
 import { OverviewContent } from "./OverviewContent";
+import { PlaySlotContent } from "./PlaySlotContent";
 import { VolatilityContent } from "./VolatilityContent";
 import { HitRateContent } from "./HitRateContent";
 import { ProfitHitRateContent } from "./ProfitHitRateContent";
@@ -49,6 +49,7 @@ export const SlotMachineDetails = ({
     { id: "profitHitRate", label: "흑자 히트율" },
     { id: "maxMultiplier", label: "최고 배수" },
     { id: "avgMultiplier", label: "평균 배수" },
+    { id: "playSlot", label: "실제로 해 보기" },
     { id: "patternAI", label: "PatternAI™" },
     { id: "screenshots", label: "스크린샷" },
   ];
@@ -78,16 +79,22 @@ export const SlotMachineDetails = ({
 
   // Get the content for the category tabs
   const getCategoryContent = (tabId: string) => {
-    // For special tabs, return specific components with navigation buttons
+    // For special tabs, return specific components
     if (tabId === "overview") {
-      return (
-        <>
-          <OverviewContent slotMachine={slotMachine} />
-          <NavigationButtons
-            currentTab={tabId}
-            tabOptions={tabOptions}
-            onNavigate={handleNavigate}
-          />
+      return <OverviewContent slotMachine={slotMachine} />;
+    } else if (tabId === "volatility") {
+      return <VolatilityContent slotMachine={slotMachine} />;
+    } else if (tabId === "playSlot") {
+      return <PlaySlotContent />;
+    } else if (tabId === "patternAI") {
+      return <PatternAIContent slotMachine={slotMachine} />;
+    } else if (tabId === "screenshots") {
+      return <ScreenshotsContent slotMachine={slotMachine} />;
+        <NavigationButtons
+          currentTab={tabId}
+          tabOptions={tabOptions}
+          onNavigate={handleNavigate}
+        />
         </>
       );
     } else if (tabId === "volatility") {
