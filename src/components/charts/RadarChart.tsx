@@ -1,13 +1,12 @@
 import React, { useRef, useState, useEffect } from "react";
 import {
-  ResponsiveContainer,
-  Tooltip,
+  RadarChart as RechartsRadarChart,
+  Radar,
   PolarGrid,
   PolarAngleAxis,
-  Radar,
+  Tooltip,
+  ResponsiveContainer,
 } from "recharts";
-// Import RadarChart separately to handle defaultProps issue
-import { RadarChart as RechartsRadarChart } from "recharts";
 import { cn } from "@/lib/utils";
 
 interface MetricData {

@@ -5,32 +5,9 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
+  XAxis,
+  YAxis,
 } from "recharts";
-// Import XAxis and YAxis separately to configure them without defaultProps
-import { XAxis as RechartsXAxis, YAxis as RechartsYAxis } from "recharts";
-
-// Create wrapper components with proper default parameters instead of defaultProps
-const XAxis = (props: any) => {
-  const defaultProps = {
-    allowDataOverflow: false,
-    allowDecimals: true,
-    allowDuplicatedCategory: true,
-    // Add other defaults as needed
-    ...props,
-  };
-  return <RechartsXAxis {...defaultProps} />;
-};
-
-const YAxis = (props: any) => {
-  const defaultProps = {
-    allowDataOverflow: false,
-    allowDecimals: true,
-    allowDuplicatedCategory: true,
-    // Add other defaults as needed
-    ...props,
-  };
-  return <RechartsYAxis {...defaultProps} />;
-};
 
 interface LineChartProps {
   title?: string;
