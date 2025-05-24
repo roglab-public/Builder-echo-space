@@ -75,13 +75,7 @@ export const CloudinaryImage: React.FC<CloudinaryImageProps> = ({
     classes.filter(Boolean).join(" ");
 
   return (
-    <div
-      className={cn("relative overflow-hidden", className)}
-      style={{
-        aspectRatio: width && height ? `${width}/${height}` : undefined,
-      }}
-      {...props}
-    >
+    <div className={cn("relative overflow-hidden", className)} {...props}>
       {/* 로딩 스피너 */}
       {loading && (
         <div className="absolute inset-0 flex items-center justify-center bg-[#1f1f1f] z-10">

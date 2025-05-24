@@ -1,4 +1,5 @@
 import React, { useRef, useState, useEffect } from "react";
+import { addLineBreaksAfterSentences } from "@/utils/text-utils";
 import {
   RadarChart as RechartsRadarChart,
   Radar,
@@ -103,9 +104,15 @@ export const RadarChart: React.FC<RadarChartProps> = ({
         </ResponsiveContainer>
       </div>
 
-      {/* Description box */}
-      <div className="mt-4 mx-[10%] p-3 bg-[#262626] rounded border border-[#333333] text-sm text-[#999999]">
-        {description}
+      {/* Description box - 모바일에서 마진 조정 */}
+      <div className="mt-4 mx-[10px] md:mx-[5%] p-3 bg-[#262626] rounded border border-[#333333] text-sm text-[#999999]">
+        {description.split(". ").map((sentence, index, array) => (
+          <React.Fragment key={index}>
+            {sentence}
+            {index < array.length - 1 && sentence.trim() !== "" ? ". " : ""}
+            {index < array.length - 1 && sentence.trim() !== "" && <br />}
+          </React.Fragment>
+        ))}
       </div>
     </div>
   );

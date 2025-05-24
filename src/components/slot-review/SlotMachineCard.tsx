@@ -38,7 +38,7 @@ export const SlotMachineCard = ({
           className,
         )}
       >
-        <div className="aspect-video relative overflow-hidden">
+        <div className="relative overflow-hidden">
           <CloudinaryImage
             src={imageUrl}
             alt={title.kr}

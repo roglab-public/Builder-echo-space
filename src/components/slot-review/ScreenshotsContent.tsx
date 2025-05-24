@@ -20,7 +20,7 @@ export const ScreenshotsContent = ({
           slotMachine.screenshots.map((screenshot, index) => (
             <div
               key={index}
-              className="aspect-video overflow-hidden rounded-lg border border-[#707070]"
+              className="overflow-hidden rounded-lg border border-[#707070]"
             >
               <CloudinaryImage
                 src={screenshot}

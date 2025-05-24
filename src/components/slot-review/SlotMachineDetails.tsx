@@ -216,12 +216,13 @@ export const SlotMachineDetails = ({
         </div>
       </div>
 
-      {/* CloudinaryImage 컴포넌트를 사용한 이미지 섹션 */}
-      <div className="overflow-hidden rounded-lg border border-[#707070] w-full max-w-3xl mx-auto relative aspect-video">
+      {/* CloudinaryImage 컴포넌트를 사용한 이미지 섹션 - 원본 비율 유지 */}
+      <div className="overflow-hidden rounded-lg border border-[#707070] w-full max-w-3xl mx-auto relative">
         <CloudinaryImage
           src={slotMachine.imageUrl}
           alt={title.kr}
           fallbackSrc="/placeholder.svg"
+          className="w-full h-auto"
         />
       </div>
 
