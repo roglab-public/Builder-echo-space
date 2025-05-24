@@ -52,7 +52,7 @@
 
   /* Custom font settings */
   :lang(ko) {
-    font-family: "S-Core Dream", sans-serif;
+    font-family: "S-Core Dream", "Noto Sans KR", sans-serif;
   }
 
   :lang(en) {
@@ -65,7 +65,9 @@
 
   /* Default font family fallback */
   html {
-    font-family: "S-Core Dream", "Montserrat", "Meiryo", system-ui, sans-serif;
+    font-family:
+      "S-Core Dream", "Noto Sans KR", "Montserrat", "Meiryo", system-ui,
+      sans-serif;
   }
 }
 

@@ -228,7 +228,7 @@ export const SlotMachineDetails = ({
 
       {/* 기본 정보 섹션 - 설명만 */}
       <div className="border border-[#707070] p-4 rounded-lg bg-card w-full max-w-3xl mx-auto">
-        <p className="text-[#BBBBBB] leading-6" lang="ko">
+        <p className="text-[#BBBBBB] leading-6 text-center" lang="ko">
           {description.kr}
         </p>
       </div>

@@ -29,7 +29,7 @@ export const PlaySlotContent: React.FC<PlaySlotContentProps> = ({
         </div>
 
         <div
-          className="mt-4 mx-[6px] mr-[10px] p-3 bg-[#262626] rounded border border-[#333333] text-sm text-[#BBBBBB] leading-6"
+          className="mt-4 mx-[6px] mr-[10px] p-3 bg-[#262626] rounded border border-[#333333] text-sm text-[#BBBBBB] leading-6 text-center"
           lang="ko"
         >
           이 데모 버전에서는 실제 게임과 동일한 경험을 제공하지만, 실제 돈을

@@ -137,8 +137,8 @@ export const BarChart: React.FC<BarChartProps> = ({
         )}
       </div>
 
-      {/* Description box - 마진 및 행간 조정 */}
-      <div className="mt-4 mx-[6px] mr-[10px] p-3 bg-[#262626] rounded border border-[#333333] text-sm text-[#BBBBBB] leading-6">
+      {/* Description box - 마진, 행간 조정 및 가운데 정렬 */}
+      <div className="mt-4 mx-[6px] mr-[10px] p-3 bg-[#262626] rounded border border-[#333333] text-sm text-[#BBBBBB] leading-6 text-center">
         {description.split(". ").map((sentence, index, array) => (
           <React.Fragment key={index}>
             {sentence}

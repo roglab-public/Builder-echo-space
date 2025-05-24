@@ -31,7 +31,7 @@ export const MaxMultiplierContent = ({
           title={`최고 배수 비교 (${maxMultiplier}x)`}
           data={comparisonData}
           yAxisUnit="x"
-          description="최고 배수는 슬롯 머신에서 획득할 수 있는 최대 배수를 나타냅니다. 높은 최고 배수는 큰 당첨금을 얻을 가능성을 의미하지만, 이러한 당첨의
+          description="최고 배수는 슬롯 머신에서 획득할 수 있는 최�� 배수를 나타냅니다. 높은 최고 배수는 큰 당첨금을 얻을 가능성을 의미하지만, 이러한 당첨의
           확률은 일반적으로 매우 낮습니다."
         />
       </div>
@@ -42,7 +42,7 @@ export const MaxMultiplierContent = ({
         <div className="py-4">
           <ScoreProgressBar score={maxMultiplierScore / 10} />
         </div>
-        <div className="mt-4 mx-[6px] mr-[10px] p-3 bg-[#262626] rounded border border-[#333333] text-sm text-[#BBBBBB] leading-6">
+        <div className="mt-4 mx-[6px] mr-[10px] p-3 bg-[#262626] rounded border border-[#333333] text-sm text-[#BBBBBB] leading-6 text-center">
           최고 배수 점수는 슬롯 머신의 최대 배수를 0~100 사이의 점수로 나타낸
           것입니다.
           <br />

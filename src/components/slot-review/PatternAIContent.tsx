@@ -11,7 +11,7 @@ export const PatternAIContent = ({ slotMachine }: PatternAIContentProps) => {
         PatternAI™
       </h3>
       <div className="p-4 bg-[#1f1f1f] border border-[#333333] rounded-lg">
-        <p className="text-[#BBBBBB] mb-4 leading-6" lang="ko">
+        <p className="text-[#BBBBBB] mb-4 leading-6 text-center" lang="ko">
           PatternAI™는 슬롯 머신의 패턴을 분석하여 최적의 플레이 방법을
           제안합니다.
         </p>

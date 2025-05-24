@@ -27,7 +27,7 @@ export const RadarChart: React.FC<RadarChartProps> = ({
   title = "슬롯 머신 성능 지표",
   metrics,
   className,
-  description = "이 차트는 슬롯 머신의 5가지 주요 성능 지표를 보여줍니다: 변동성, 히트율, 흑자 히트율, 최고 배수, 평균 배수. 각 지표가 높을수록 전체적인 성능이 우수합니다.",
+  description = "이 차트는 슬롯 머신의 5가지 주요 성��� 지표를 보여줍니다: 변동성, 히트율, 흑자 히트율, 최고 배수, 평균 배수. 각 지표가 높을수록 전체적인 성능이 우수합니다.",
 }) => {
   const [isVisible, setIsVisible] = useState(false);
   const chartRef = useRef<HTMLDivElement>(null);
@@ -104,8 +104,8 @@ export const RadarChart: React.FC<RadarChartProps> = ({
         </ResponsiveContainer>
       </div>
 
-      {/* Description box - 마진 및 행간 조정 */}
-      <div className="mt-4 mx-[6px] mr-[10px] p-3 bg-[#262626] rounded border border-[#333333] text-sm text-[#BBBBBB] leading-6">
+      {/* Description box - 마진, 행간 조정 및 가운데 정렬 */}
+      <div className="mt-4 mx-[6px] mr-[10px] p-3 bg-[#262626] rounded border border-[#333333] text-sm text-[#BBBBBB] leading-6 text-center">
         {description.split(". ").map((sentence, index, array) => (
           <React.Fragment key={index}>
             {sentence}

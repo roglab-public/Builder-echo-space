@@ -41,7 +41,7 @@ export const ProfitHitRateContent = ({
         <div className="py-4">
           <ScoreProgressBar score={profithitRatioScore} />
         </div>
-        <div className="mt-4 mx-[6px] mr-[10px] p-3 bg-[#262626] rounded border border-[#333333] text-sm text-[#BBBBBB] leading-6">
+        <div className="mt-4 mx-[6px] mr-[10px] p-3 bg-[#262626] rounded border border-[#333333] text-sm text-[#BBBBBB] leading-6 text-center">
           흑자 히트율 점수는 슬롯 머신의 흑자 히트율을 0~100 사이의 점수로
           나타낸 것입니다.
           <br />
