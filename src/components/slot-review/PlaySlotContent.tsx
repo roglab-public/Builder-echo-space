@@ -1,4 +1,5 @@
 import React from "react";
+import GameFrame from "./GameFrame";
 
 interface PlaySlotContentProps {
   gameUrl?: string;
@@ -19,15 +20,12 @@ export const PlaySlotContent: React.FC<PlaySlotContentProps> = ({
           않고도 슬롯의 게임플레이를 체험할 수 있습니다.
         </p>
 
-        <div className="relative overflow-hidden rounded-lg border border-[#333333] w-full aspect-[16/9]">
-          <iframe
-            src={gameUrl}
-            title="Play Slot Machine"
-            className="absolute top-0 left-0 w-full h-full"
-            frameBorder="0"
-            allowFullScreen
-            loading="lazy"
-          ></iframe>
+        <div className="rounded-lg border border-[#333333] w-full">
+          <GameFrame
+            gameUrl={gameUrl}
+            title="슬롯 머신 게임"
+            aspectRatio="16/9"
+          />
         </div>
 
         <div
