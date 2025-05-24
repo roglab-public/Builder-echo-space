@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Suspense } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AdminLayout } from "@/components/layout/AdminLayout";
 import Index from "./pages/Index";
@@ -14,6 +14,13 @@ const CloudinarySettings = React.lazy(
 );
 const CloudinaryHelp = React.lazy(() => import("./pages/admin/CloudinaryHelp"));
 
+// Loading fallback component
+const LoadingFallback = () => (
+  <div className="min-h-screen flex items-center justify-center">
+    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-yellow"></div>
+  </div>
+);
+
 // Simplify the App component to avoid potential hook-related issues
 const App = () => {
   return (
@@ -27,11 +34,23 @@ const App = () => {
           <Route path="/slot-machine/new" element={<SlotMachineEdit />} />
           <Route path="/admin/dashboard" element={<Dashboard />} />
           <Route path="/admin/settings" element={<Settings />} />
+          {/* Wrap lazy-loaded routes with Suspense */}
           <Route
             path="/admin/cloudinary-settings"
-            element={<CloudinarySettings />}
+            element={
+              <Suspense fallback={<LoadingFallback />}>
+                <CloudinarySettings />
+              </Suspense>
+            }
           />
-          <Route path="/admin/cloudinary-help" element={<CloudinaryHelp />} />
+          <Route
+            path="/admin/cloudinary-help"
+            element={
+              <Suspense fallback={<LoadingFallback />}>
+                <CloudinaryHelp />
+              </Suspense>
+            }
+          />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Route>

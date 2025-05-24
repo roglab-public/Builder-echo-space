@@ -5,11 +5,24 @@
  * 여기에 클라우드 이름과 기타 설정을 지정할 수 있습니다.
  */
 
-// Cloudinary 클라우드 이름 (로컬 스토리지에서 가져옴)
-export const CLOUDINARY_CLOUD_NAME =
-  typeof window !== "undefined"
-    ? localStorage.getItem("cloudinary_cloud_name") || "your-cloud-name"
-    : "your-cloud-name";
+// Cloudinary 클라우드 이름 기본값
+export const DEFAULT_CLOUD_NAME = "your-cloud-name";
+
+// 현재 설정된 Cloudinary 클라우드 이름 가져오기
+export const getCloudinaryCloudName = (): string => {
+  if (typeof window === "undefined") return DEFAULT_CLOUD_NAME;
+
+  try {
+    const savedName = localStorage.getItem("cloudinary_cloud_name");
+    return savedName || DEFAULT_CLOUD_NAME;
+  } catch (error) {
+    console.error("로컬 스토리지 접근 오류:", error);
+    return DEFAULT_CLOUD_NAME;
+  }
+};
+
+// 현재 설정된 클라우드 이름
+export const CLOUDINARY_CLOUD_NAME = DEFAULT_CLOUD_NAME;
 
 // Cloudinary 기본 URL 생성
 export const CLOUDINARY_BASE_URL = `https://res.cloudinary.com/${CLOUDINARY_CLOUD_NAME}/image/upload`;

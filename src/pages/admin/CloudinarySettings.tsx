@@ -3,7 +3,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { CLOUDINARY_CLOUD_NAME } from "@/config/cloudinary";
+import {
+  DEFAULT_CLOUD_NAME,
+  getCloudinaryCloudName,
+} from "@/config/cloudinary";
 import { CloudinaryImage } from "@/components/ui/cloudinary-image";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -16,7 +19,7 @@ const TEST_IMAGE_URLS = [
 ];
 
 const CloudinarySettings = () => {
-  const [cloudName, setCloudName] = useState(CLOUDINARY_CLOUD_NAME || "");
+  const [cloudName, setCloudName] = useState(DEFAULT_CLOUD_NAME);
   const [testUrl, setTestUrl] = useState("");
   const [isSaved, setIsSaved] = useState(false);
   const [testResult, setTestResult] = useState<null | {
@@ -24,11 +27,15 @@ const CloudinarySettings = () => {
     message: string;
   }>(null);
 
-  // 로컬 스토리지에서 저장된 설정 불러오기
+  // 페이지 로드 시 저장된 설정 가져오기
   useEffect(() => {
-    const savedCloudName = localStorage.getItem("cloudinary_cloud_name");
-    if (savedCloudName) {
-      setCloudName(savedCloudName);
+    try {
+      const savedCloudName = getCloudinaryCloudName();
+      if (savedCloudName) {
+        setCloudName(savedCloudName);
+      }
+    } catch (error) {
+      console.error("저장된 설정을 불러오는 중 오류 발생:", error);
     }
   }, []);
 
@@ -39,14 +46,18 @@ const CloudinarySettings = () => {
       return;
     }
 
-    // 로컬 스토리지에 저장
-    localStorage.setItem("cloudinary_cloud_name", cloudName);
-
-    setIsSaved(true);
-    setTimeout(() => setIsSaved(false), 3000);
+    try {
+      // 로컬 스토리지에 저장
+      localStorage.setItem("cloudinary_cloud_name", cloudName);
+      setIsSaved(true);
+      setTimeout(() => setIsSaved(false), 3000);
+    } catch (error) {
+      console.error("설정 저장 중 오류 발생:", error);
+      alert("설정을 저장하는 중 오류가 발생했습니다.");
+    }
   };
 
-  // 이미지 테스트
+  // 이미지 테���트
   const handleTestImage = () => {
     if (!testUrl.trim()) {
       setTestResult({

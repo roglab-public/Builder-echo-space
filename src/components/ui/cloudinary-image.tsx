@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { getCloudinaryUrl } from "@/config/cloudinary";
+import React, { useState, useEffect } from "react";
+import { getCloudinaryCloudName } from "@/config/cloudinary";
 
 interface CloudinaryImageProps extends React.HTMLAttributes<HTMLDivElement> {
   src: string;
@@ -10,6 +10,8 @@ interface CloudinaryImageProps extends React.HTMLAttributes<HTMLDivElement> {
   className?: string;
   imgClassName?: string;
   objectFit?: "cover" | "contain" | "fill" | "none" | "scale-down";
+  onLoad?: () => void;
+  onError?: () => void;
 }
 
 export const CloudinaryImage: React.FC<CloudinaryImageProps> = ({
@@ -21,26 +23,51 @@ export const CloudinaryImage: React.FC<CloudinaryImageProps> = ({
   className = "",
   imgClassName = "",
   objectFit = "cover",
+  onLoad,
+  onError,
   ...props
 }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+  const [cloudName, setCloudName] = useState<string | null>(null);
+  const [processedSrc, setProcessedSrc] = useState<string>(src || fallbackSrc);
 
-  // 최적화된 이미지 URL 가져오기
-  const optimizedSrc = src
-    ? getCloudinaryUrl(src, { width, height })
-    : fallbackSrc;
+  // 페이지 로드 시 클라우드 이름 가져오기
+  useEffect(() => {
+    // 컴포넌트 마운트 후 클라우드 이름 가져오기
+    setCloudName(getCloudinaryCloudName());
+
+    // src가 없으면 fallback 사용
+    if (!src) {
+      setProcessedSrc(fallbackSrc);
+      setLoading(false);
+      return;
+    }
+
+    // Cloudinary URL 최적화 (필요한 경우)
+    if (src.includes("cloudinary.com")) {
+      setProcessedSrc(src);
+    } else if (src.startsWith("http")) {
+      // 다른 외부 URL
+      setProcessedSrc(src);
+    } else {
+      // fallback 사용
+      setProcessedSrc(src);
+    }
+  }, [src, fallbackSrc]);
 
   // 이미지 로드 완료 처리
   const handleLoad = () => {
     setLoading(false);
+    if (onLoad) onLoad();
   };
 
   // 이미지 로드 오류 처리
   const handleError = () => {
-    console.error("이미지 로드 실패:", optimizedSrc);
+    console.error("이미지 로드 실패:", processedSrc);
     setError(true);
     setLoading(false);
+    if (onError) onError();
   };
 
   // 클래스 이름 결합 유틸리티 함수 (tailwind-merge와 같은 역할)
@@ -64,7 +91,7 @@ export const CloudinaryImage: React.FC<CloudinaryImageProps> = ({
 
       {/* 이미지 */}
       <img
-        src={error ? fallbackSrc : optimizedSrc}
+        src={error ? fallbackSrc : processedSrc}
         alt={alt}
         className={cn(
           "w-full h-full transition-opacity duration-300",
