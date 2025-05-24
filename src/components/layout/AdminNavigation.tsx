@@ -15,6 +15,7 @@ export const AdminNavigation = () => {
     { name: "대시보드", path: "/admin/dashboard" },
     { name: "슬롯 리뷰", path: "/" }, // Root for slot reviews list
     { name: "슬롯 등록", path: "/slot-machine/new" },
+    { name: "Cloudinary", path: "/admin/cloudinary-settings" },
     { name: "어드민", path: "/admin/settings" },
   ];
 

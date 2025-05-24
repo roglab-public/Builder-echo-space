@@ -21,6 +21,8 @@ const App = () => {
           <Route path="/slot-machine/new" element={<SlotMachineEdit />} />
           <Route path="/admin/dashboard" element={<Dashboard />} />
           <Route path="/admin/settings" element={<Settings />} />
+          <Route path="/admin/cloudinary-settings" element={<React.lazy(() => import("./pages/admin/CloudinarySettings"))} />
+          <Route path="/admin/cloudinary-help" element={<React.lazy(() => import("./pages/admin/CloudinaryHelp"))} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Route>

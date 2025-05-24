@@ -5,8 +5,11 @@
  * 여기에 클라우드 이름과 기타 설정을 지정할 수 있습니다.
  */
 
-// Cloudinary 클라우드 이름 - 본인의 Cloudinary 클라우드 이름으로 변경하세요
-export const CLOUDINARY_CLOUD_NAME = "your-cloud-name";
+// Cloudinary 클라우드 이름 (로컬 스토리지에서 가져옴)
+export const CLOUDINARY_CLOUD_NAME =
+  typeof window !== "undefined"
+    ? localStorage.getItem("cloudinary_cloud_name") || "your-cloud-name"
+    : "your-cloud-name";
 
 // Cloudinary 기본 URL 생성
 export const CLOUDINARY_BASE_URL = `https://res.cloudinary.com/${CLOUDINARY_CLOUD_NAME}/image/upload`;
