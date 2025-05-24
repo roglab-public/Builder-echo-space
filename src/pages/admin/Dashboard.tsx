@@ -1,9 +1,9 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { slotMachines } from "@/data/slot-machines";
-import { GoogleDriveImage } from "@/components/ui/google-drive-image";
+import { CloudinaryImage } from "@/components/ui/cloudinary-image";
 
 const Dashboard = () => {
-  // Calculate statistics
+  // 통계 계산
   const totalSlots = slotMachines.length;
   const avgOverallScore = Math.round(
     slotMachines.reduce((sum, slot) => sum + slot.overallScore, 0) / totalSlots,
@@ -68,7 +68,7 @@ const Dashboard = () => {
         <CardContent>
           <div className="flex items-center gap-4">
             <div className="w-16 h-16 rounded-md overflow-hidden bg-muted">
-              <GoogleDriveImage
+              <CloudinaryImage
                 src={topRatedSlot.imageUrl}
                 alt={topRatedSlot.title.kr}
                 fallbackSrc="/placeholder.svg"

@@ -1,5 +1,5 @@
 import { SlotMachine } from "@/types";
-import { GoogleDriveImage } from "@/components/ui/google-drive-image";
+import { CloudinaryImage } from "@/components/ui/cloudinary-image";
 
 interface ScreenshotsContentProps {
   slotMachine: SlotMachine;
@@ -22,8 +22,8 @@ export const ScreenshotsContent = ({
               key={index}
               className="aspect-video overflow-hidden rounded-lg border border-[#707070]"
             >
-              <GoogleDriveImage
-                src={screenshot} // Use actual screenshot URL if available
+              <CloudinaryImage
+                src={screenshot}
                 fallbackSrc="/placeholder.svg"
                 alt={`${title.kr} 스크린샷 ${index + 1}`}
               />

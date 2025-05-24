@@ -9,8 +9,7 @@ import {
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
 import { Link } from "react-router-dom";
-import { GoogleDriveImage } from "@/components/ui/google-drive-image";
-import { ImageWithFallback } from "@/components/ui/image-with-fallback";
+import { CloudinaryImage } from "@/components/ui/cloudinary-image";
 
 interface SlotMachineCardProps {
   slotMachine: SlotMachine;
@@ -23,7 +22,7 @@ export const SlotMachineCard = ({
 }: SlotMachineCardProps) => {
   const { id, title, dev, imageUrl, overallScore, rtp } = slotMachine;
 
-  // Determine color based on score
+  // 점수에 따른 색상 결정
   const getScoreColor = (score: number) => {
     if (score >= 80) return "bg-brand-yellow";
     if (score >= 60) return "bg-amber-500";
@@ -40,7 +39,7 @@ export const SlotMachineCard = ({
         )}
       >
         <div className="aspect-video relative overflow-hidden">
-          <GoogleDriveImage
+          <CloudinaryImage
             src={imageUrl}
             alt={title.kr}
             imgClassName="transition-transform hover:scale-105"
