@@ -1,830 +1,731 @@
-import { useState, useRef, ChangeEvent } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { getSlotMachineById } from "@/data/slot-machines";
-import { SlotMachine } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { LineChart } from "@/components/charts/LineChart";
-import { Badge } from "@/components/ui/badge";
-
-// Default empty slot machine data for new entries
-const emptySlotMachine: SlotMachine = {
-  id: "",
-  name: "",
-  provider: "",
-  updatedDate: new Date().toISOString().substring(0, 10) + "-00-00",
-  overallScore: 50,
-  profitScore: 50,
-  volatility: 5000,
-  volatilityScore: 50,
-  hitFrequency: 25,
-  hitFrequencyScore: 50,
-  profithitRatio: 10,
-  profithitRatioScore: 50,
-  maxMultiplier: 500,
-  maxMultiplierScore: 500,
-  avgMultiplier: 50,
-  avgMultiplierScore: 50,
-  betAmount: 1,
-  rtp: 95,
-  imageUrl: "/placeholder.svg",
-  title: {
-    kr: "",
-    en: "",
-    jp: "",
-  },
-  dev: {
-    kr: "",
-    en: "",
-    jp: "",
-  },
-  description: {
-    kr: "",
-    en: "",
-    jp: "",
-  },
-  webUrls: [""],
-  screenshots: [],
-  thumbnail: "",
-};
+import { getSlotMachineById, slotMachines } from "@/data/slot-machines";
+import { SlotMachine, LocalizedText } from "@/types";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { CloudinaryImage } from "@/components/ui/cloudinary-image";
 
 const SlotMachineEdit = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const isNew = id === undefined;
 
-  // Initialize with existing data or empty template
-  const initialData = id ? getSlotMachineById(id) : emptySlotMachine;
-  const [formData, setFormData] = useState<SlotMachine>(
-    initialData || emptySlotMachine,
-  );
-  const [csvData, setCsvData] = useState<number[]>([]);
-  const [previewData, setPreviewData] = useState<number[]>([]);
-  const [activeTab, setActiveTab] = useState<string>("basic");
+  // 초기 상태 설정
+  const emptyLocalizedText: LocalizedText = {
+    kr: "",
+    en: "",
+    jp: "",
+  };
 
-  // Handle form field changes
-  const handleChange = (
-    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  const emptySlotMachine: SlotMachine = {
+    id: "",
+    name: "",
+    provider: "",
+    updatedDate: new Date().toISOString().split("T")[0] + "-00-00",
+    overallScore: 50,
+    profitScore: 50,
+    volatility: 5000,
+    volatilityScore: 50,
+    hitFrequency: 20,
+    hitFrequencyScore: 50,
+    profithitRatio: 10,
+    profithitRatioScore: 50,
+    maxMultiplier: 500,
+    maxMultiplierScore: 500,
+    avgMultiplier: 50,
+    avgMultiplierScore: 50,
+    betAmount: 1,
+    rtp: 95,
+    imageUrl: "/placeholder.svg",
+    title: { ...emptyLocalizedText },
+    dev: { ...emptyLocalizedText },
+    description: { ...emptyLocalizedText },
+    webUrls: [""],
+    screenshots: [], // 빈 스크린샷 배열
+    thumbnail: "",
+  };
+
+  // 상태 관리
+  const [formData, setFormData] = useState<SlotMachine>(emptySlotMachine);
+  const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [screenshotUrls, setScreenshotUrls] = useState<string[]>([""]);
+
+  // 기존 데이터 불러오기
+  useEffect(() => {
+    if (!isNew && id) {
+      const slotMachine = getSlotMachineById(id);
+      if (slotMachine) {
+        setFormData(slotMachine);
+        // 스크린샷 URL이 있으면 그대로 사용, 없으면 빈 입력 필드 추가
+        setScreenshotUrls(
+          slotMachine.screenshots && slotMachine.screenshots.length > 0
+            ? [...slotMachine.screenshots, ""]
+            : [""],
+        );
+      } else {
+        setErrorMessage("슬롯 머신을 찾을 수 없습니다.");
+      }
+    }
+  }, [id, isNew]);
+
+  // 폼 입력 처리
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
 
-    // Handle nested fields
-    if (name.includes(".")) {
-      const [parent, child] = name.split(".");
-      setFormData({
-        ...formData,
-        [parent]: {
-          ...formData[parent as keyof SlotMachine],
-          [child]: value,
-        },
-      });
-    } else {
-      // Handle numeric conversions
-      if (
-        [
-          "overallScore",
-          "profitScore",
-          "volatility",
-          "volatilityScore",
-          "hitFrequency",
-          "hitFrequencyScore",
-          "profithitRatio",
-          "profithitRatioScore",
-          "maxMultiplier",
-          "maxMultiplierScore",
-          "avgMultiplier",
-          "avgMultiplierScore",
-          "betAmount",
-          "rtp",
-        ].includes(name)
-      ) {
-        setFormData({
-          ...formData,
-          [name]: parseFloat(value) || 0,
-        });
-      } else {
-        setFormData({
-          ...formData,
-          [name]: value,
-        });
-      }
+  // 다국어 텍스트 입력 처리
+  const handleLocalizedTextChange = (
+    field: keyof SlotMachine,
+    lang: keyof LocalizedText,
+    value: string,
+  ) => {
+    setFormData((prev) => ({
+      ...prev,
+      [field]: {
+        ...(prev[field] as LocalizedText),
+        [lang]: value,
+      },
+    }));
+  };
+
+  // 숫자 입력 처리
+  const handleNumberChange = (name: keyof SlotMachine, value: string) => {
+    const numValue = parseFloat(value);
+    if (!isNaN(numValue)) {
+      setFormData((prev) => ({ ...prev, [name]: numValue }));
     }
   };
 
-  // Handle CSV file upload
-  const handleCSVUpload = (e: ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  // 스크린샷 URL 입력 처리
+  const handleScreenshotChange = (index: number, value: string) => {
+    const newUrls = [...screenshotUrls];
+    newUrls[index] = value;
 
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      const text = event.target?.result as string;
-      const rows = text.split("\n");
-      const balanceData: number[] = [];
+    // 만약 마지막 필드에 값을 입력하고 총 필드 수가 10개 미만이면 새 필드 추가
+    if (index === newUrls.length - 1 && value && newUrls.length < 10) {
+      newUrls.push("");
+    }
 
-      rows.forEach((row) => {
-        const value = parseFloat(row.trim());
-        if (!isNaN(value)) {
-          balanceData.push(value);
-        }
-      });
+    setScreenshotUrls(newUrls);
 
-      // Keep only 200 records if more provided
-      const finalData = balanceData.slice(0, 200);
-      setCsvData(finalData);
-      setPreviewData(finalData);
-    };
-    reader.readAsText(file);
+    // 실제 유효한 URL만 formData에 저장 (빈 문자열은 제외)
+    const validUrls = newUrls.filter((url) => url.trim() !== "");
+    setFormData((prev) => ({
+      ...prev,
+      screenshots: validUrls,
+    }));
   };
 
-  // Handle form submission
+  // 스크린샷 URL 필드 삭제
+  const handleRemoveScreenshot = (index: number) => {
+    if (screenshotUrls.length <= 1) return; // 최소 한 개의 필드는 유지
+
+    const newUrls = [...screenshotUrls];
+    newUrls.splice(index, 1);
+    setScreenshotUrls(newUrls);
+
+    // formData 업데이트
+    const validUrls = newUrls.filter((url) => url.trim() !== "");
+    setFormData((prev) => ({
+      ...prev,
+      screenshots: validUrls,
+    }));
+  };
+
+  // 폼 제출 처리
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    setIsLoading(true);
+    setErrorMessage(null);
 
-    // In a real app, this would send data to an API
-    console.log("Form data submitted:", formData);
-    console.log("CSV data:", csvData);
+    try {
+      // formData에 유효한 스크린샷 URL만 포함시키기
+      const validScreenshots = screenshotUrls.filter(
+        (url) => url.trim() !== "",
+      );
+      const submissionData = {
+        ...formData,
+        screenshots: validScreenshots,
+      };
 
-    // Show success message and navigate
-    alert("슬롯 머신 정보가 업데이트되었습니다.");
-    navigate(`/slot-machine/${formData.id}`);
-  };
+      console.log("저장된 데이터:", submissionData);
 
-  // Get badge color based on score
-  const getBadgeVariant = (score: number) => {
-    return score >= 50 ? "yellow" : "red";
+      // 실제 데이터 저장 로직이 들어갈 자리 (API 호출 등)
+      // 여기서는 데모 목적으로 로컬 스토리지에 저장
+      const existingIndex = slotMachines.findIndex(
+        (sm) => sm.id === submissionData.id,
+      );
+
+      if (existingIndex >= 0) {
+        // 기존 데이터 업데이트
+        slotMachines[existingIndex] = submissionData;
+      } else {
+        // 새 데이터 추가
+        slotMachines.push(submissionData);
+      }
+
+      // 저장 성공 후 상세 페이지로 이동
+      setTimeout(() => {
+        navigate(`/slot-machine/${submissionData.id}`);
+      }, 1000);
+    } catch (error) {
+      setErrorMessage("데이터 저장 중 오류가 발생했습니다.");
+      console.error("Error saving data:", error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
-    <div className="container mx-auto py-8 px-4 bg-background">
-      <div className="max-w-3xl mx-auto">
-        <div className="flex items-center justify-between mb-6">
-          <h1 className="text-3xl font-bold text-foreground">
-            {id ? "슬롯 머신 정보 수정" : "새 슬롯 머�� 추가"}
-          </h1>
-          <div className="flex space-x-2">
-            <Badge
-              variant={getBadgeVariant(formData.overallScore)}
-              size="xl"
-              className="flex items-center gap-1"
-            >
-              {formData.overallScore}
-            </Badge>
-            <Badge
-              variant={getBadgeVariant(formData.profitScore)}
-              size="xl"
-              className="flex items-center gap-1"
-            >
-              {formData.profitScore}
-            </Badge>
-          </div>
+    <div className="container mx-auto py-8">
+      <h1 className="text-3xl font-bold mb-6">
+        {isNew ? "새 슬롯 머신 등록" : "슬롯 머신 정보 수정"}
+      </h1>
+
+      {errorMessage && (
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
+          {errorMessage}
         </div>
+      )}
 
-        <Tabs
-          defaultValue="basic"
-          value={activeTab}
-          onValueChange={setActiveTab}
-          className="w-full"
-        >
-          <TabsList className="grid grid-cols-4 mb-8">
-            <TabsTrigger value="basic">기본 정보</TabsTrigger>
-            <TabsTrigger value="scores">점수 및 지표</TabsTrigger>
-            <TabsTrigger value="multilingual">다국어 정보</TabsTrigger>
-            <TabsTrigger value="data">플레이 데이터</TabsTrigger>
-          </TabsList>
+      <form onSubmit={handleSubmit} className="space-y-8">
+        {/* 기본 정보 섹션 */}
+        <Card>
+          <CardHeader>
+            <CardTitle>기본 정보</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <Label htmlFor="id">ID</Label>
+                <Input
+                  id="id"
+                  name="id"
+                  value={formData.id}
+                  onChange={handleInputChange}
+                  placeholder="unique_identifier"
+                  required
+                />
+                <p className="text-sm text-muted-foreground">
+                  고유한 식별자를 입력하세요 (영문, 숫자, 언더스코어만 사용)
+                </p>
+              </div>
 
-          <form onSubmit={handleSubmit}>
-            <TabsContent value="basic" className="space-y-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle>기본 정보</CardTitle>
-                  <CardDescription>
-                    슬롯 머신의 기본 정보를 입력하세요.
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <label htmlFor="id" className="text-sm font-medium">
-                        ID
-                      </label>
-                      <Input
-                        id="id"
-                        name="id"
-                        value={formData.id}
-                        onChange={handleChange}
-                        placeholder="unique_id_name_date"
-                        required
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <label htmlFor="name" className="text-sm font-medium">
-                        이름 (영문)
-                      </label>
-                      <Input
-                        id="name"
-                        name="name"
-                        value={formData.name}
-                        onChange={handleChange}
-                        placeholder="Fortune Dragon"
-                        required
-                      />
-                    </div>
-                  </div>
+              <div className="space-y-2">
+                <Label htmlFor="name">이름 (영문)</Label>
+                <Input
+                  id="name"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleInputChange}
+                  placeholder="Fortune Dragon"
+                  required
+                />
+              </div>
 
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <label htmlFor="provider" className="text-sm font-medium">
-                        제공 업체
-                      </label>
-                      <Input
-                        id="provider"
-                        name="provider"
-                        value={formData.provider}
-                        onChange={handleChange}
-                        placeholder="Lucky Games"
-                        required
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <label
-                        htmlFor="updatedDate"
-                        className="text-sm font-medium"
-                      >
-                        업데이트 날짜
-                      </label>
-                      <Input
-                        id="updatedDate"
-                        name="updatedDate"
-                        value={formData.updatedDate.substring(0, 10)}
-                        onChange={handleChange}
-                        type="date"
-                        required
-                      />
-                    </div>
-                  </div>
+              <div className="space-y-2">
+                <Label htmlFor="provider">제공자</Label>
+                <Input
+                  id="provider"
+                  name="provider"
+                  value={formData.provider}
+                  onChange={handleInputChange}
+                  placeholder="Lucky Games"
+                  required
+                />
+              </div>
 
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <label htmlFor="rtp" className="text-sm font-medium">
-                        RTP (%)
-                      </label>
-                      <Input
-                        id="rtp"
-                        name="rtp"
-                        value={formData.rtp}
-                        onChange={handleChange}
-                        type="number"
-                        step="0.1"
-                        min="80"
-                        max="100"
-                        required
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <label
-                        htmlFor="betAmount"
-                        className="text-sm font-medium"
-                      >
-                        기본 베팅 금액
-                      </label>
-                      <Input
-                        id="betAmount"
-                        name="betAmount"
-                        value={formData.betAmount}
-                        onChange={handleChange}
-                        type="number"
-                        step="0.1"
-                        min="0.1"
-                        required
-                      />
-                    </div>
-                  </div>
+              <div className="space-y-2">
+                <Label htmlFor="rtp">RTP (%)</Label>
+                <Input
+                  id="rtp"
+                  type="number"
+                  step="0.1"
+                  min="1"
+                  max="100"
+                  value={formData.rtp}
+                  onChange={(e) => handleNumberChange("rtp", e.target.value)}
+                  placeholder="96.5"
+                  required
+                />
+              </div>
 
-                  <div className="space-y-2">
-                    <label htmlFor="imageUrl" className="text-sm font-medium">
-                      이미지 URL
-                    </label>
-                    <Input
-                      id="imageUrl"
-                      name="imageUrl"
-                      value={formData.imageUrl}
-                      onChange={handleChange}
-                      placeholder="https://example.com/image.jpg"
-                    />
-                    <p className="text-xs text-muted-foreground">
-                      이미지 URL을 입력하거나 기본 이미지를 사용하세요
-                    </p>
-                  </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
+              <div className="space-y-2">
+                <Label htmlFor="betAmount">기본 베팅액</Label>
+                <Input
+                  id="betAmount"
+                  type="number"
+                  step="0.1"
+                  min="0.1"
+                  value={formData.betAmount}
+                  onChange={(e) =>
+                    handleNumberChange("betAmount", e.target.value)
+                  }
+                  placeholder="1"
+                  required
+                />
+              </div>
 
-            <TabsContent value="scores" className="space-y-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle>점수 및 지표</CardTitle>
-                  <CardDescription>
-                    슬롯 머신의 성능 지표를 입력하세요.
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  <div className="space-y-4">
-                    <h3 className="text-lg font-medium">전체 평가</h3>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <label
-                          htmlFor="overallScore"
-                          className="text-sm font-medium"
-                        >
-                          종합 점수 (0-100)
-                        </label>
-                        <Input
-                          id="overallScore"
-                          name="overallScore"
-                          value={formData.overallScore}
-                          onChange={handleChange}
-                          type="number"
-                          min="0"
-                          max="100"
-                          required
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <label
-                          htmlFor="profitScore"
-                          className="text-sm font-medium"
-                        >
-                          수익성 점수 (0-100)
-                        </label>
-                        <Input
-                          id="profitScore"
-                          name="profitScore"
-                          value={formData.profitScore}
-                          onChange={handleChange}
-                          type="number"
-                          min="0"
-                          max="100"
-                          required
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="space-y-4">
-                    <h3 className="text-lg font-medium">변동성</h3>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <label
-                          htmlFor="volatility"
-                          className="text-sm font-medium"
-                        >
-                          변동성 수치
-                        </label>
-                        <Input
-                          id="volatility"
-                          name="volatility"
-                          value={formData.volatility}
-                          onChange={handleChange}
-                          type="number"
-                          min="0"
-                          required
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <label
-                          htmlFor="volatilityScore"
-                          className="text-sm font-medium"
-                        >
-                          변동성 점수 (0-100)
-                        </label>
-                        <Input
-                          id="volatilityScore"
-                          name="volatilityScore"
-                          value={formData.volatilityScore}
-                          onChange={handleChange}
-                          type="number"
-                          min="0"
-                          max="100"
-                          required
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="space-y-4">
-                    <h3 className="text-lg font-medium">히트율</h3>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <label
-                          htmlFor="hitFrequency"
-                          className="text-sm font-medium"
-                        >
-                          히트 빈도 (%)
-                        </label>
-                        <Input
-                          id="hitFrequency"
-                          name="hitFrequency"
-                          value={formData.hitFrequency}
-                          onChange={handleChange}
-                          type="number"
-                          step="0.1"
-                          min="0"
-                          required
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <label
-                          htmlFor="hitFrequencyScore"
-                          className="text-sm font-medium"
-                        >
-                          히트율 점수 (0-100)
-                        </label>
-                        <Input
-                          id="hitFrequencyScore"
-                          name="hitFrequencyScore"
-                          value={formData.hitFrequencyScore}
-                          onChange={handleChange}
-                          type="number"
-                          min="0"
-                          max="100"
-                          required
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="space-y-4">
-                    <h3 className="text-lg font-medium">흑자 히트율</h3>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <label
-                          htmlFor="profithitRatio"
-                          className="text-sm font-medium"
-                        >
-                          흑자 히트 비율 (%)
-                        </label>
-                        <Input
-                          id="profithitRatio"
-                          name="profithitRatio"
-                          value={formData.profithitRatio}
-                          onChange={handleChange}
-                          type="number"
-                          step="0.1"
-                          min="0"
-                          required
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <label
-                          htmlFor="profithitRatioScore"
-                          className="text-sm font-medium"
-                        >
-                          흑자 히트율 점수 (0-100)
-                        </label>
-                        <Input
-                          id="profithitRatioScore"
-                          name="profithitRatioScore"
-                          value={formData.profithitRatioScore}
-                          onChange={handleChange}
-                          type="number"
-                          min="0"
-                          max="100"
-                          required
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="space-y-4">
-                    <h3 className="text-lg font-medium">배수</h3>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <label
-                          htmlFor="maxMultiplier"
-                          className="text-sm font-medium"
-                        >
-                          최고 배수
-                        </label>
-                        <Input
-                          id="maxMultiplier"
-                          name="maxMultiplier"
-                          value={formData.maxMultiplier}
-                          onChange={handleChange}
-                          type="number"
-                          min="0"
-                          required
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <label
-                          htmlFor="maxMultiplierScore"
-                          className="text-sm font-medium"
-                        >
-                          최고 배수 점수
-                        </label>
-                        <Input
-                          id="maxMultiplierScore"
-                          name="maxMultiplierScore"
-                          value={formData.maxMultiplierScore}
-                          onChange={handleChange}
-                          type="number"
-                          min="0"
-                          required
-                        />
-                      </div>
-                    </div>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <label
-                          htmlFor="avgMultiplier"
-                          className="text-sm font-medium"
-                        >
-                          평균 배수
-                        </label>
-                        <Input
-                          id="avgMultiplier"
-                          name="avgMultiplier"
-                          value={formData.avgMultiplier}
-                          onChange={handleChange}
-                          type="number"
-                          step="0.1"
-                          min="0"
-                          required
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <label
-                          htmlFor="avgMultiplierScore"
-                          className="text-sm font-medium"
-                        >
-                          평균 배수 점수
-                        </label>
-                        <Input
-                          id="avgMultiplierScore"
-                          name="avgMultiplierScore"
-                          value={formData.avgMultiplierScore}
-                          onChange={handleChange}
-                          type="number"
-                          min="0"
-                          required
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
-
-            <TabsContent value="multilingual" className="space-y-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle>다국어 정보</CardTitle>
-                  <CardDescription>
-                    한국어, 영어, 일본어로 정보를 입력하세요.
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  <div className="space-y-4">
-                    <h3 className="text-lg font-medium">제목</h3>
-                    <div className="grid grid-cols-1 gap-4">
-                      <div className="space-y-2">
-                        <label
-                          htmlFor="title.kr"
-                          className="text-sm font-medium"
-                        >
-                          한국어 제목
-                        </label>
-                        <Input
-                          id="title.kr"
-                          name="title.kr"
-                          value={formData.title.kr}
-                          onChange={handleChange}
-                          placeholder="포춘 드래곤"
-                          required
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <label
-                          htmlFor="title.en"
-                          className="text-sm font-medium"
-                        >
-                          영어 제목
-                        </label>
-                        <Input
-                          id="title.en"
-                          name="title.en"
-                          value={formData.title.en}
-                          onChange={handleChange}
-                          placeholder="Fortune Dragon"
-                          required
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <label
-                          htmlFor="title.jp"
-                          className="text-sm font-medium"
-                        >
-                          일본어 제목
-                        </label>
-                        <Input
-                          id="title.jp"
-                          name="title.jp"
-                          value={formData.title.jp}
-                          onChange={handleChange}
-                          placeholder="フォーチュン・ドラゴン"
-                          required
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="space-y-4">
-                    <h3 className="text-lg font-medium">제공 업체</h3>
-                    <div className="grid grid-cols-1 gap-4">
-                      <div className="space-y-2">
-                        <label htmlFor="dev.kr" className="text-sm font-medium">
-                          한국어 업체명
-                        </label>
-                        <Input
-                          id="dev.kr"
-                          name="dev.kr"
-                          value={formData.dev.kr}
-                          onChange={handleChange}
-                          placeholder="럭키 게임즈"
-                          required
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <label htmlFor="dev.en" className="text-sm font-medium">
-                          영어 업체명
-                        </label>
-                        <Input
-                          id="dev.en"
-                          name="dev.en"
-                          value={formData.dev.en}
-                          onChange={handleChange}
-                          placeholder="Lucky Games"
-                          required
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <label htmlFor="dev.jp" className="text-sm font-medium">
-                          일본어 업체명
-                        </label>
-                        <Input
-                          id="dev.jp"
-                          name="dev.jp"
-                          value={formData.dev.jp}
-                          onChange={handleChange}
-                          placeholder="ラッキーゲームズ"
-                          required
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="space-y-4">
-                    <h3 className="text-lg font-medium">설명</h3>
-                    <div className="grid grid-cols-1 gap-4">
-                      <div className="space-y-2">
-                        <label
-                          htmlFor="description.kr"
-                          className="text-sm font-medium"
-                        >
-                          한국어 설명
-                        </label>
-                        <Textarea
-                          id="description.kr"
-                          name="description.kr"
-                          value={formData.description.kr}
-                          onChange={handleChange}
-                          placeholder="행운의 드래곤 테마 슬롯"
-                          rows={3}
-                          required
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <label
-                          htmlFor="description.en"
-                          className="text-sm font-medium"
-                        >
-                          영어 설명
-                        </label>
-                        <Textarea
-                          id="description.en"
-                          name="description.en"
-                          value={formData.description.en}
-                          onChange={handleChange}
-                          placeholder="Lucky dragon themed slot"
-                          rows={3}
-                          required
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <label
-                          htmlFor="description.jp"
-                          className="text-sm font-medium"
-                        >
-                          일본어 설명
-                        </label>
-                        <Textarea
-                          id="description.jp"
-                          name="description.jp"
-                          value={formData.description.jp}
-                          onChange={handleChange}
-                          placeholder="幸運のドラゴンテーマスロット"
-                          rows={3}
-                          required
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
-
-            <TabsContent value="data" className="space-y-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle>플레이 데이터</CardTitle>
-                  <CardDescription>
-                    200회 플레이 데이터를 CSV 파일로 업로드하세요.
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="space-y-4">
-                    <div className="flex flex-col items-center justify-center border-2 border-dashed border-gray-300 rounded-lg p-6 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-900 transition-colors">
-                      <input
-                        ref={fileInputRef}
-                        type="file"
-                        accept=".csv"
-                        className="hidden"
-                        onChange={handleCSVUpload}
-                      />
-                      <Button
-                        type="button"
-                        variant="outline"
-                        onClick={() => fileInputRef.current?.click()}
-                      >
-                        CSV 파일 선택
-                      </Button>
-                      <p className="text-sm text-muted-foreground mt-2">
-                        200회의 플레이 잔액 데이터가 포함된 CSV 파일을
-                        업로드하세요
-                      </p>
-                      {csvData.length > 0 && (
-                        <p className="text-sm text-green-500 font-medium">
-                          {csvData.length}개의 데이터가 로드됨
-                        </p>
-                      )}
-                    </div>
-
-                    {previewData.length > 0 && (
-                      <div className="mt-6">
-                        <h3 className="text-lg font-medium mb-4">
-                          데이터 미리보기
-                        </h3>
-                        <div className="h-64">
-                          <LineChart
-                            startValue={previewData[0]}
-                            endValue={previewData[previewData.length - 1]}
-                            data={previewData}
-                            description="플레이 데이터 그래프 미리보기입니다. 200회의 플레이 동안 잔액이 어떻게 변화하는지 보여줍니다."
-                          />
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
-
-            <div className="mt-8 flex justify-between">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => navigate(-1)}
-              >
-                취소
-              </Button>
-              <Button type="submit" className="bg-brand-yellow text-black">
-                저장
-              </Button>
+              <div className="space-y-2">
+                <Label htmlFor="imageUrl">메인 이미지 URL (Cloudinary)</Label>
+                <Input
+                  id="imageUrl"
+                  name="imageUrl"
+                  value={formData.imageUrl}
+                  onChange={handleInputChange}
+                  placeholder="https://res.cloudinary.com/your-cloud-name/image/upload/your-image-id"
+                  required
+                />
+                <p className="text-sm text-muted-foreground">
+                  Cloudinary URL을 입력하세요
+                </p>
+              </div>
             </div>
-          </form>
-        </Tabs>
-      </div>
+
+            {/* 이미지 미리보기 */}
+            <div className="mt-4">
+              <p className="text-sm font-medium mb-2">이미지 미리보기</p>
+              <div className="aspect-video w-full max-w-md overflow-hidden rounded-md border border-input">
+                <CloudinaryImage
+                  src={formData.imageUrl}
+                  alt="메인 이미지 미리보기"
+                />
+              </div>
+            </div>
+
+            {/* 스크린샷 URL 입력 필드 (최대 10개) */}
+            <div className="mt-6">
+              <p className="text-sm font-medium mb-2">스크린샷 (최대 10개)</p>
+              {screenshotUrls.map((url, index) => (
+                <div key={index} className="flex gap-2 mb-2">
+                  <Input
+                    value={url}
+                    onChange={(e) =>
+                      handleScreenshotChange(index, e.target.value)
+                    }
+                    placeholder="https://res.cloudinary.com/your-cloud-name/image/upload/your-screenshot-id"
+                  />
+                  {index > 0 && (
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      onClick={() => handleRemoveScreenshot(index)}
+                      className="px-3"
+                    >
+                      삭제
+                    </Button>
+                  )}
+                </div>
+              ))}
+              <p className="text-xs text-muted-foreground mt-1">
+                최대 10개까지 스크린샷을 추가할 수 있습니다. 마지��� 필드에
+                URL을 입력하면 새 필드가 자동으로 추가됩니다.
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* 다국어 제목 섹션 */}
+        <Card>
+          <CardHeader>
+            <CardTitle>다국어 제목</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="space-y-2">
+                <Label htmlFor="title-kr">한국어</Label>
+                <Input
+                  id="title-kr"
+                  value={formData.title.kr}
+                  onChange={(e) =>
+                    handleLocalizedTextChange("title", "kr", e.target.value)
+                  }
+                  placeholder="포춘 드래곤"
+                  required
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="title-en">영어</Label>
+                <Input
+                  id="title-en"
+                  value={formData.title.en}
+                  onChange={(e) =>
+                    handleLocalizedTextChange("title", "en", e.target.value)
+                  }
+                  placeholder="Fortune Dragon"
+                  required
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="title-jp">일본어</Label>
+                <Input
+                  id="title-jp"
+                  value={formData.title.jp}
+                  onChange={(e) =>
+                    handleLocalizedTextChange("title", "jp", e.target.value)
+                  }
+                  placeholder="フォーチュン・ドラゴン"
+                  required
+                />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* 다국어 개발사 이름 섹션 */}
+        <Card>
+          <CardHeader>
+            <CardTitle>다국어 개발사 이름</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="space-y-2">
+                <Label htmlFor="dev-kr">한국어</Label>
+                <Input
+                  id="dev-kr"
+                  value={formData.dev.kr}
+                  onChange={(e) =>
+                    handleLocalizedTextChange("dev", "kr", e.target.value)
+                  }
+                  placeholder="럭키 게임즈"
+                  required
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="dev-en">영어</Label>
+                <Input
+                  id="dev-en"
+                  value={formData.dev.en}
+                  onChange={(e) =>
+                    handleLocalizedTextChange("dev", "en", e.target.value)
+                  }
+                  placeholder="Lucky Games"
+                  required
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="dev-jp">일본어</Label>
+                <Input
+                  id="dev-jp"
+                  value={formData.dev.jp}
+                  onChange={(e) =>
+                    handleLocalizedTextChange("dev", "jp", e.target.value)
+                  }
+                  placeholder="ラッキーゲームズ"
+                  required
+                />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* 다국어 설명 섹션 */}
+        <Card>
+          <CardHeader>
+            <CardTitle>다국어 설명</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-1 gap-6">
+              <div className="space-y-2">
+                <Label htmlFor="description-kr">한국어</Label>
+                <Textarea
+                  id="description-kr"
+                  value={formData.description.kr}
+                  onChange={(e) =>
+                    handleLocalizedTextChange(
+                      "description",
+                      "kr",
+                      e.target.value,
+                    )
+                  }
+                  placeholder="행운의 드래곤 테마 슬롯"
+                  required
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="description-en">영어</Label>
+                <Textarea
+                  id="description-en"
+                  value={formData.description.en}
+                  onChange={(e) =>
+                    handleLocalizedTextChange(
+                      "description",
+                      "en",
+                      e.target.value,
+                    )
+                  }
+                  placeholder="Lucky dragon themed slot"
+                  required
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="description-jp">일본어</Label>
+                <Textarea
+                  id="description-jp"
+                  value={formData.description.jp}
+                  onChange={(e) =>
+                    handleLocalizedTextChange(
+                      "description",
+                      "jp",
+                      e.target.value,
+                    )
+                  }
+                  placeholder="幸運のドラゴンテーマスロット"
+                  required
+                />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* 점수 섹션 */}
+        <Card>
+          <CardHeader>
+            <CardTitle>점수 정보</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <Label htmlFor="overallScore">종합 점수 (0-100)</Label>
+                <Input
+                  id="overallScore"
+                  type="number"
+                  min="0"
+                  max="100"
+                  value={formData.overallScore}
+                  onChange={(e) =>
+                    handleNumberChange("overallScore", e.target.value)
+                  }
+                  required
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="profitScore">수익 점수 (0-100)</Label>
+                <Input
+                  id="profitScore"
+                  type="number"
+                  min="0"
+                  max="100"
+                  value={formData.profitScore}
+                  onChange={(e) =>
+                    handleNumberChange("profitScore", e.target.value)
+                  }
+                  required
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="volatility">변동성 실제값</Label>
+                <Input
+                  id="volatility"
+                  type="number"
+                  min="0"
+                  max="10000"
+                  value={formData.volatility}
+                  onChange={(e) =>
+                    handleNumberChange("volatility", e.target.value)
+                  }
+                  required
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="volatilityScore">변동성 점수 (0-100)</Label>
+                <Input
+                  id="volatilityScore"
+                  type="number"
+                  min="0"
+                  max="100"
+                  value={formData.volatilityScore}
+                  onChange={(e) =>
+                    handleNumberChange("volatilityScore", e.target.value)
+                  }
+                  required
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="hitFrequency">히트 빈도 실제값</Label>
+                <Input
+                  id="hitFrequency"
+                  type="number"
+                  step="0.1"
+                  min="0"
+                  max="100"
+                  value={formData.hitFrequency}
+                  onChange={(e) =>
+                    handleNumberChange("hitFrequency", e.target.value)
+                  }
+                  required
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="hitFrequencyScore">
+                  히트 빈도 점수 (0-100)
+                </Label>
+                <Input
+                  id="hitFrequencyScore"
+                  type="number"
+                  min="0"
+                  max="100"
+                  value={formData.hitFrequencyScore}
+                  onChange={(e) =>
+                    handleNumberChange("hitFrequencyScore", e.target.value)
+                  }
+                  required
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="profithitRatio">흑자 히트 비율 실제값</Label>
+                <Input
+                  id="profithitRatio"
+                  type="number"
+                  step="0.1"
+                  min="0"
+                  max="100"
+                  value={formData.profithitRatio}
+                  onChange={(e) =>
+                    handleNumberChange("profithitRatio", e.target.value)
+                  }
+                  required
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="profithitRatioScore">
+                  흑자 히트 비율 점수 (0-100)
+                </Label>
+                <Input
+                  id="profithitRatioScore"
+                  type="number"
+                  min="0"
+                  max="100"
+                  value={formData.profithitRatioScore}
+                  onChange={(e) =>
+                    handleNumberChange("profithitRatioScore", e.target.value)
+                  }
+                  required
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="maxMultiplier">최대 배수 실제값</Label>
+                <Input
+                  id="maxMultiplier"
+                  type="number"
+                  min="1"
+                  max="10000"
+                  value={formData.maxMultiplier}
+                  onChange={(e) =>
+                    handleNumberChange("maxMultiplier", e.target.value)
+                  }
+                  required
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="maxMultiplierScore">최대 배수 점수</Label>
+                <Input
+                  id="maxMultiplierScore"
+                  type="number"
+                  min="1"
+                  max="10000"
+                  value={formData.maxMultiplierScore}
+                  onChange={(e) =>
+                    handleNumberChange("maxMultiplierScore", e.target.value)
+                  }
+                  required
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="avgMultiplier">평균 배수 실제값</Label>
+                <Input
+                  id="avgMultiplier"
+                  type="number"
+                  min="1"
+                  max="1000"
+                  value={formData.avgMultiplier}
+                  onChange={(e) =>
+                    handleNumberChange("avgMultiplier", e.target.value)
+                  }
+                  required
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="avgMultiplierScore">평균 배수 점수</Label>
+                <Input
+                  id="avgMultiplierScore"
+                  type="number"
+                  min="1"
+                  max="1000"
+                  value={formData.avgMultiplierScore}
+                  onChange={(e) =>
+                    handleNumberChange("avgMultiplierScore", e.target.value)
+                  }
+                  required
+                />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* 웹사이트 URL 섹션 */}
+        <Card>
+          <CardHeader>
+            <CardTitle>관련 웹사이트</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              <Label htmlFor="webUrl">웹 URL</Label>
+              <Input
+                id="webUrl"
+                value={formData.webUrls[0] || ""}
+                onChange={(e) => {
+                  const newUrls = [...formData.webUrls];
+                  newUrls[0] = e.target.value;
+                  setFormData({ ...formData, webUrls: newUrls });
+                }}
+                placeholder="https://example.com"
+              />
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* 제출 버튼 */}
+        <div className="flex justify-end">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => navigate(-1)}
+            className="mr-2"
+            disabled={isLoading}
+          >
+            취소
+          </Button>
+          <Button type="submit" disabled={isLoading}>
+            {isLoading ? "저장 중..." : isNew ? "등록하기" : "수정하기"}
+          </Button>
+        </div>
+      </form>
     </div>
   );
 };

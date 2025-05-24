@@ -1,6 +1,5 @@
 import React, { useState } from "react";
-import { cn } from "@/lib/utils";
-import { getOptimizedImageUrl } from "@/lib/cloudinary-utils";
+import { getCloudinaryUrl } from "@/config/cloudinary";
 
 interface CloudinaryImageProps extends React.HTMLAttributes<HTMLDivElement> {
   src: string;
@@ -19,8 +18,8 @@ export const CloudinaryImage: React.FC<CloudinaryImageProps> = ({
   width,
   height,
   fallbackSrc = "/placeholder.svg",
-  className,
-  imgClassName,
+  className = "",
+  imgClassName = "",
   objectFit = "cover",
   ...props
 }) => {
@@ -28,7 +27,9 @@ export const CloudinaryImage: React.FC<CloudinaryImageProps> = ({
   const [error, setError] = useState(false);
 
   // 최적화된 이미지 URL 가져오기
-  const optimizedSrc = getOptimizedImageUrl(src, { width, height });
+  const optimizedSrc = src
+    ? getCloudinaryUrl(src, { width, height })
+    : fallbackSrc;
 
   // 이미지 로드 완료 처리
   const handleLoad = () => {
@@ -41,6 +42,10 @@ export const CloudinaryImage: React.FC<CloudinaryImageProps> = ({
     setError(true);
     setLoading(false);
   };
+
+  // 클래스 이름 결합 유틸리티 함수 (tailwind-merge와 같은 역할)
+  const cn = (...classes: (string | undefined)[]) =>
+    classes.filter(Boolean).join(" ");
 
   return (
     <div
@@ -61,8 +66,6 @@ export const CloudinaryImage: React.FC<CloudinaryImageProps> = ({
       <img
         src={error ? fallbackSrc : optimizedSrc}
         alt={alt}
-        width={width}
-        height={height}
         className={cn(
           "w-full h-full transition-opacity duration-300",
           `object-${objectFit}`,

@@ -29,7 +29,7 @@ export interface SlotMachine {
   dev: LocalizedText;
   description: LocalizedText;
   webUrls: string[];
-  screenshots: string[];
+  screenshots: string[]; // 최대 10개의 스크린샷 URL을 저장할 배열
   thumbnail: string;
 }
 
@@ -43,4 +43,10 @@ export interface ScoreMetric {
 export interface ScoreCategory {
   title: string;
   metrics: ScoreMetric[];
+}
+
+// Cloudinary 관련 타입 추가
+export interface CloudinaryConfig {
+  cloudName: string; // Cloudinary 클라우드 이름
+  apiKey?: string; // API 키 (선택 사항)
 }
