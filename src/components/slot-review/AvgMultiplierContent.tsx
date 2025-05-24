@@ -41,7 +41,7 @@ export const AvgMultiplierContent = ({
         <div className="py-4">
           <ScoreProgressBar score={avgMultiplierScore} />
         </div>
-        <div className="mt-4 mx-[10px] md:mx-[5%] p-3 bg-[#262626] rounded border border-[#333333] text-sm text-[#999999]">
+        <div className="mt-4 mx-[6px] mr-[10px] p-3 bg-[#262626] rounded border border-[#333333] text-sm text-[#BBBBBB] leading-6">
           평균 배수 점수는 슬롯 머신의 평균 배수를 0~100 사이의 점수로 나타낸
           것입니다.
           <br />

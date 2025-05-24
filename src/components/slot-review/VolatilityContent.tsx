@@ -31,7 +31,7 @@ export const VolatilityContent = ({ slotMachine }: VolatilityContentProps) => {
             title={`변동성 비교 (${volatility / 100}%)`}
             data={comparisonData}
             yAxisUnit="%"
-            description="변동성 수치는 이 슬롯 머신이 일반적인 슬롯 머신들과 비교했을 때 얼마나 변동이 큰지를 나타냅니다. ���은 값은 더 큰 상금을 얻을 가능성이 있지만, 잦은 손실이 발생할 수 있음을 의미합니다."
+            description="변동성 수치는 이 슬롯 머신이 일반적인 슬롯 머신들과 비교했을 때 얼마나 변동이 큰지를 나타냅니다. 높은 값은 더 큰 상금�� 얻을 가능성이 있지만, 잦은 손실이 발생할 수 있음을 의미합니다."
           />
         </ChartErrorBoundary>
       </div>
@@ -42,7 +42,7 @@ export const VolatilityContent = ({ slotMachine }: VolatilityContentProps) => {
         <div className="py-4">
           <ScoreProgressBar score={volatilityScore} />
         </div>
-        <div className="mt-4 mx-[10px] md:mx-[5%] p-3 bg-[#262626] rounded border border-[#333333] text-sm text-[#999999]">
+        <div className="mt-4 mx-[6px] mr-[10px] p-3 bg-[#262626] rounded border border-[#333333] text-sm text-[#BBBBBB] leading-6">
           변동성 점수는 슬롯 머신의 변동성을 0~100 사이의 점수로 나타낸
           것입니다.
           <br />

@@ -104,8 +104,8 @@ export const RadarChart: React.FC<RadarChartProps> = ({
         </ResponsiveContainer>
       </div>
 
-      {/* Description box - 모바일에서 마진 조정 */}
-      <div className="mt-4 mx-[10px] md:mx-[5%] p-3 bg-[#262626] rounded border border-[#333333] text-sm text-[#999999]">
+      {/* Description box - 마진 및 행간 조정 */}
+      <div className="mt-4 mx-[6px] mr-[10px] p-3 bg-[#262626] rounded border border-[#333333] text-sm text-[#BBBBBB] leading-6">
         {description.split(". ").map((sentence, index, array) => (
           <React.Fragment key={index}>
             {sentence}

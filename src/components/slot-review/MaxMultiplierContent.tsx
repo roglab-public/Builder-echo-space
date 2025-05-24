@@ -42,11 +42,11 @@ export const MaxMultiplierContent = ({
         <div className="py-4">
           <ScoreProgressBar score={maxMultiplierScore / 10} />
         </div>
-        <div className="mt-4 mx-[10px] md:mx-[5%] p-3 bg-[#262626] rounded border border-[#333333] text-sm text-[#999999]">
+        <div className="mt-4 mx-[6px] mr-[10px] p-3 bg-[#262626] rounded border border-[#333333] text-sm text-[#BBBBBB] leading-6">
           최고 배수 점수는 슬롯 머신의 최대 배수를 0~100 사이의 점수로 나타낸
           것입니다.
           <br />
-          50점��� 기준으로 하여, 점수가 높을수록 큰 당첨금을 얻을 가능성이
+          50점을 기준으로 하여, 점수가 높을수록 큰 당첨금을 얻을 가능성이
           높아집니다.
         </div>
       </div>

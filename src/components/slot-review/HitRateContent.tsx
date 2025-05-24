@@ -39,13 +39,13 @@ export const HitRateContent = ({ slotMachine }: HitRateContentProps) => {
         <div className="py-4">
           <ScoreProgressBar score={hitFrequencyScore} />
         </div>
-        <div className="mt-4 mx-[10px] md:mx-[5%] p-3 bg-[#262626] rounded border border-[#333333] text-sm text-[#999999]">
+        <div className="mt-4 mx-[6px] mr-[10px] p-3 bg-[#262626] rounded border border-[#333333] text-sm text-[#BBBBBB] leading-6">
           히트율 점수는 슬롯 머신의 히트 빈도를 0~100 사이의 점수로 나타낸
           것입니다.
           <br />
           50점을 기준으로 하여, 점수가 높을수록 히트율이 높은 것을 의미합니다.
           <br />
-          히��율이 높은 슬롯은 자주 당첨되지만 당첨 금액은 작을 수 있습니다.
+          히트율이 높은 슬롯은 자주 당첨되지만 당첨 금액은 작을 수 있습니다.
         </div>
       </div>
     </div>
