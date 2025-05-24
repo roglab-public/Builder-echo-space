@@ -4,6 +4,8 @@ import {
   getOptimizedGoogleDriveUrl,
   getPlaceholderImage,
   isGoogleDriveUrl,
+  extractGoogleDriveFileId,
+  getThumbnailUrl,
 } from "@/lib/image-utils";
 
 interface GoogleDriveImageProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -30,7 +32,7 @@ export const GoogleDriveImage: React.FC<GoogleDriveImageProps> = ({
   const [imgSrc, setImgSrc] = useState<string>("");
   const [error, setError] = useState(false);
   const [retryCount, setRetryCount] = useState(0);
-  const maxRetries = 2;
+  const maxRetries = 3;
 
   useEffect(() => {
     // Reset state when src changes
@@ -56,9 +58,16 @@ export const GoogleDriveImage: React.FC<GoogleDriveImageProps> = ({
 
     try {
       if (isGoogleDriveUrl(src)) {
-        // For Google Drive images, use optimized URL formats
-        const optimizedUrl = getOptimizedGoogleDriveUrl(src);
-        setImgSrc(optimizedUrl);
+        // First attempt: Use lh3.googleusercontent.com format
+        const fileId = extractGoogleDriveFileId(src);
+        if (fileId) {
+          const imageUrl = `https://lh3.googleusercontent.com/d/${fileId}`;
+          setImgSrc(imageUrl);
+        } else {
+          setImgSrc(fallbackSrc);
+          setError(true);
+          setLoading(false);
+        }
       } else {
         // For regular images, use as is
         setImgSrc(src);
@@ -75,22 +84,27 @@ export const GoogleDriveImage: React.FC<GoogleDriveImageProps> = ({
    * Try an alternative method when initial loading fails
    */
   const tryAlternativeMethod = () => {
-    setRetryCount((prev) => prev + 1);
+    setRetryCount((prevCount) => prevCount + 1);
+    const newRetryCount = retryCount + 1;
+
+    // Extract file ID
+    const fileId = extractGoogleDriveFileId(src);
+    if (!fileId) {
+      setImgSrc(fallbackSrc);
+      setError(true);
+      setLoading(false);
+      return;
+    }
 
     // Different approaches based on retry count
-    if (retryCount === 0) {
-      // Try thumbnail approach on first retry
-      const fileId =
-        src.match(/id=([^&]+)/)?.[1] || src.match(/\/file\/d\/([^/]+)/)?.[1];
-      if (fileId) {
-        setImgSrc(`https://drive.google.com/thumbnail?id=${fileId}&sz=w1000`);
-      } else {
-        setImgSrc(fallbackSrc);
-        setError(true);
-        setLoading(false);
-      }
+    if (newRetryCount === 1) {
+      // First retry: Use thumbnail approach
+      setImgSrc(getThumbnailUrl(fileId, 1000));
+    } else if (newRetryCount === 2) {
+      // Second retry: Try direct download
+      setImgSrc(`https://drive.google.com/uc?export=download&id=${fileId}`);
     } else {
-      // Fall back to placeholder on subsequent retries
+      // Final fallback
       setImgSrc(fallbackSrc);
       setError(true);
       setLoading(false);

@@ -37,13 +37,18 @@ export const getOptimizedGoogleDriveUrl = (url: string): string => {
     return url;
   }
 
-  // Try different URL formats that might bypass restrictions
-  // 1. Direct download link (most reliable but may have size limitations)
-  return `https://drive.google.com/uc?export=download&id=${fileId}`;
+  // Return using lh3.googleusercontent.com format which often works better with CORS
+  return `https://lh3.googleusercontent.com/d/${fileId}`;
+};
 
-  // Alternative formats to try if the above doesn't work:
-  // return `https://drive.google.com/thumbnail?id=${fileId}&sz=w1000`; // Thumbnail version
-  // return `https://lh3.googleusercontent.com/d/${fileId}`; // Another format that sometimes works
+/**
+ * Gets a thumbnail URL for Google Drive image which is more reliable for display
+ */
+export const getThumbnailUrl = (
+  fileId: string,
+  size: number = 1000,
+): string => {
+  return `https://drive.google.com/thumbnail?id=${fileId}&sz=w${size}`;
 };
 
 /**
@@ -101,4 +106,31 @@ export const isGoogleDriveUrl = (url: string): boolean => {
     url?.includes("drive.google.com") ||
     url?.includes("lh3.googleusercontent.com")
   );
+};
+
+/**
+ * Extract file ID from various Google Drive URL formats
+ */
+export const extractGoogleDriveFileId = (url: string): string | null => {
+  if (!url) return null;
+
+  // Format: https://drive.google.com/file/d/FILE_ID/view
+  const filePathMatch = url.match(/\/file\/d\/([^/]+)/);
+  if (filePathMatch && filePathMatch[1]) {
+    return filePathMatch[1];
+  }
+
+  // Format: https://drive.google.com/uc?export=view&id=FILE_ID
+  const exportViewMatch = url.match(/[?&]id=([^&]+)/);
+  if (exportViewMatch && exportViewMatch[1]) {
+    return exportViewMatch[1];
+  }
+
+  // Format: https://drive.google.com/open?id=FILE_ID
+  const openIdMatch = url.match(/open\?id=([^&]+)/);
+  if (openIdMatch && openIdMatch[1]) {
+    return openIdMatch[1];
+  }
+
+  return null;
 };
