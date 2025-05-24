@@ -1,3 +1,5 @@
+import React from 'react';
+
 /**
  * 텍스트 유틸리티 함수
  */
@@ -26,7 +28,7 @@ export const addLineBreaksAfterSentences = (text: string): string => {
  * @param text 원본 텍스트
  * @returns 줄바꿈이 포함된 JSX
  */
-export const renderWithLineBreaks = (text: string): JSX.Element => {
+export const renderWithLineBreaks = (text: string): React.ReactNode => {
   const textWithBreaks = addLineBreaksAfterSentences(text);
   
   // 줄바꿈을 <br />로 변환
