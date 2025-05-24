@@ -9,6 +9,18 @@ import {
   YAxis,
 } from "recharts";
 
+// Suppress the React defaultProps warning for Recharts
+const originalConsoleError = console.error;
+console.error = (...args: any[]) => {
+  if (
+    typeof args[0] === "string" &&
+    args[0].includes("Support for defaultProps will be removed")
+  ) {
+    return;
+  }
+  originalConsoleError(...args);
+};
+
 interface LineChartProps {
   title?: string;
   data?: number[];
