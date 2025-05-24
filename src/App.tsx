@@ -8,6 +8,12 @@ import Dashboard from "./pages/admin/Dashboard";
 import Settings from "./pages/admin/Settings";
 import NotFound from "./pages/NotFound";
 
+// Lazy-loaded components
+const CloudinarySettings = React.lazy(
+  () => import("./pages/admin/CloudinarySettings"),
+);
+const CloudinaryHelp = React.lazy(() => import("./pages/admin/CloudinaryHelp"));
+
 // Simplify the App component to avoid potential hook-related issues
 const App = () => {
   return (
@@ -21,8 +27,11 @@ const App = () => {
           <Route path="/slot-machine/new" element={<SlotMachineEdit />} />
           <Route path="/admin/dashboard" element={<Dashboard />} />
           <Route path="/admin/settings" element={<Settings />} />
-          <Route path="/admin/cloudinary-settings" element={<React.lazy(() => import("./pages/admin/CloudinarySettings"))} />
-          <Route path="/admin/cloudinary-help" element={<React.lazy(() => import("./pages/admin/CloudinaryHelp"))} />
+          <Route
+            path="/admin/cloudinary-settings"
+            element={<CloudinarySettings />}
+          />
+          <Route path="/admin/cloudinary-help" element={<CloudinaryHelp />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Route>
